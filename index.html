@@ -517,12 +517,35 @@ function tfzMask(num){ // 与 gen_codes.py 完全对称（零溢出风险）
   }
   return out;
 }
+
+// v2（新算法：顺序敏感、空间巨大，可稳定生成大量唯一码；与 gen_tfz_codes.mjs / build_tfz.py 完全对称）
+function tfzMask2(num){
+  const s = TFZ_SEED + ":v2:" + String(num);
+  let h1 = 0x9e3779b1 >>> 0, h2 = 0x85ebca6b >>> 0;
+  for(let i=0;i<s.length;i++){
+    const c = s.charCodeAt(i);
+    h1 = (h1 ^ c) >>> 0;
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+    h2 = (h2 + c * 0x9e3779b9) >>> 0;
+    h2 = Math.imul(h2 ^ h1, 0x85ebca6b) >>> 0;
+  }
+  const h = (h1 ^ h2) >>> 0;
+  let out = '';
+  for(let i=0;i<12;i++){
+    let w = Math.imul(h ^ (i * 0x85ebca6b), 0x9e3779b1) >>> 0;
+    w = (w ^ (w >>> 13)) >>> 0;
+    w = Math.imul(w, 0x85ebca6b) >>> 0;
+    out += TFZ_BASE[w % TFZ_BASE.length];
+  }
+  return out;
+}
+
 function tfzVerify(code){
   code=(code||'').trim().toUpperCase().replace(/\s/g,'');
   if(!code.startsWith('TFZ-'))return false;
   const body=code.slice(4).replace(/-/g,'');
   if(body.length!==12)return false;
-  for(let num=1;num<10000;num++){ if(tfzMask(num)===body) return true; }
+  for(let num=1;num<10000;num++){ if(tfzMask(num)===body || tfzMask2(num)===body) return true; }
   return false;
 }
 const TFZ_KEY='tfz_unlock_v1';
