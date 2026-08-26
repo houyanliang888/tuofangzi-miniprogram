@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>土方子小百科 · 激活码领取</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC",sans-serif;background:linear-gradient(160deg,#0f3d2e,#0a2a20);color:#eaf1f8;min-height:100vh;padding:24px 16px;display:flex;flex-direction:column;align-items:center}
+  .card{width:100%;max-width:420px;background:#13402f;border:1px solid #1f6b4d;border-radius:16px;padding:22px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  h1{font-size:20px;margin:0 0 4px;color:#2bd07e;text-align:center}
+  .sub{font-size:13px;color:#9fd9c2;text-align:center;margin-bottom:18px}
+  .price{font-size:34px;font-weight:800;text-align:center;color:#fff;margin:6px 0}
+  .price small{font-size:14px;color:#9fd9c2;font-weight:400}
+  .btn{display:block;width:100%;padding:15px;margin:16px 0 6px;border:0;border-radius:12px;background:#2bd07e;color:#0a2a20;font-size:17px;font-weight:700;cursor:pointer}
+  .btn:active{transform:scale(.98)}
+  .hint{font-size:12px;color:#8ac3ad;text-align:center;margin-bottom:10px}
+  .result{margin-top:14px;padding:16px;border:1px dashed #2bd07e;border-radius:12px;background:#0a2a20;text-align:center;display:none}
+  .result .lab{font-size:12px;color:#9fd9c2}
+  .code{font-size:22px;font-weight:800;letter-spacing:1px;color:#2bd07e;margin:8px 0;word-break:break-all}
+  .copy{font-size:13px;color:#7fd1a6;cursor:pointer}
+  .count{font-size:12px;color:#8ac3ad;text-align:center;margin-top:14px}
+  details{margin-top:18px;font-size:12px;color:#7cae9b}
+  details summary{cursor:pointer;color:#9fd9c2}
+  details p{line-height:1.6}
+  code{background:#0a2a20;padding:2px 5px;border-radius:4px;color:#2bd07e}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>土方子小百科 · 激活码</h1>
+    <div class="sub">永久买断版解锁码</div>
+    <div class="price">¥6.66 <small>一次付费 · 永久使用</small></div>
+    <button class="btn" id="claim">我已付款，领取激活码</button>
+    <div class="hint">付款后点上方按钮，系统自动发放，无需人工</div>
+    <div class="result" id="result">
+      <div class="lab">您的激活码（长按复制 / 在 App「激活」弹层里输入）</div>
+      <div class="code" id="code"></div>
+      <span class="copy" id="copy">点击复制</span>
+    </div>
+    <div class="count" id="count"></div>
+    <details>
+      <summary>侯哥管理说明（客户请忽略）</summary>
+      <p>本页码池已内置 <b>200</b> 个有效激活码，客户点击即随机分配一个并写入本机缓存防重复领取。<br>
+      码池用尽后：运行 <code>土方子部署包\售卖\激活码批量生成.py 200</code> 重新生成一批，把下方 <code>POOL</code> 数组替换为新码即可（需重新部署到 GitHub）。<br>
+      ⚠️ 码池写在页面 JS 中属公开可见，请勿把整批码发到公开群；发现被刷可更换码段。</p>
+    </details>
+  </div>
+<script>
+  const POOL=[
+  "TFZ-2RFJ-QB83-EK4R",
+  "TFZ-9XDG-P7TK-BUCG",
+  "TFZ-CADK-BT43-CH58",
+  "TFZ-8YXJ-HX8D-M2HM",
+  "TFZ-ASXG-H8HT-37RD",
+  "TFZ-YHUW-8SBH-RLYS",
+  "TFZ-7CDR-5BS6-FK5H",
+  "TFZ-A65B-ZTT6-223V",
+  "TFZ-7Q5G-392R-YS82",
+  "TFZ-3HDN-RP9B-M5LK",
+  "TFZ-EH7D-RZB7-VDZB",
+  "TFZ-XGAQ-6NVZ-MVKS",
+  "TFZ-ETP3-RGEC-JVM4",
+  "TFZ-3L45-SKGS-MWXG",
+  "TFZ-ETH5-J4DH-GTAW",
+  "TFZ-4MDD-PU6A-CGL9",
+  "TFZ-SDUT-N6A8-YN2N",
+  "TFZ-5CDR-KP69-Z5KF",
+  "TFZ-BSUK-UBRB-NA9V",
+  "TFZ-TNCV-P92C-J733",
+  "TFZ-XMRJ-KAAJ-3BSU",
+  "TFZ-K8JW-YGBE-G4QV",
+  "TFZ-6REB-ZWDW-YRE8",
+  "TFZ-B8GZ-NYS3-R3V8",
+  "TFZ-NEU5-PRY2-CUBA",
+  "TFZ-FVZU-8AQQ-ARUZ",
+  "TFZ-2C9T-35T9-T79S",
+  "TFZ-ZWKE-9CG8-EF6L",
+  "TFZ-8LVB-TN9Z-DKTB",
+  "TFZ-LXL5-DKTV-ZT2H",
+  "TFZ-VCFZ-96R9-KR6X",
+  "TFZ-PVDG-WNHF-8A2X",
+  "TFZ-8LLN-WKNB-5XRE",
+  "TFZ-49JS-EJR9-SGD2",
+  "TFZ-PMKL-C677-6ELK",
+  "TFZ-5CU5-YJZ5-6CHQ",
+  "TFZ-8VS3-3W9Z-DBTE",
+  "TFZ-9MQ6-JGRY-9QQ7",
+  "TFZ-B37R-3B9X-NSQU",
+  "TFZ-7VT5-ZQCE-HC6V",
+  "TFZ-T2GU-LYFX-CNL9",
+  "TFZ-82BQ-VMPX-EJY2",
+  "TFZ-6EJQ-C9XW-KJBR",
+  "TFZ-EECT-4VH7-NCUJ",
+  "TFZ-D35S-3WT8-UNCJ",
+  "TFZ-REFP-6X2Z-ADZH",
+  "TFZ-MAQW-YKRY-2TSK",
+  "TFZ-KCQ7-7XA2-SFX9",
+  "TFZ-2ZL3-9KQL-XLQR",
+  "TFZ-BUEZ-JT9G-9ZJH",
+  "TFZ-JHAK-L96Y-6QRM",
+  "TFZ-NYX2-BRNF-4A88",
+  "TFZ-TPFM-57Z4-EC6W",
+  "TFZ-WGES-VC7H-JHQ4",
+  "TFZ-FLP5-DEVD-KEM7",
+  "TFZ-S8M8-HRYF-5D34",
+  "TFZ-JKBW-FCNW-RV67",
+  "TFZ-93MV-F9TC-MAMJ",
+  "TFZ-Q5TH-KM4Z-3E79",
+  "TFZ-WH6A-C4AM-S9ES",
+  "TFZ-C32U-LLR5-LT82",
+  "TFZ-MARM-PLXB-TZYR",
+  "TFZ-PKKS-PMNF-RANY",
+  "TFZ-4AJD-L7ND-2356",
+  "TFZ-WMD2-NW2D-2826",
+  "TFZ-2DGV-WWXP-NNM8",
+  "TFZ-XJY3-SY4M-8VBY",
+  "TFZ-T23Y-6RQ6-P8J9",
+  "TFZ-CDPN-XZSB-3YLQ",
+  "TFZ-8LJT-UNDW-3RRY",
+  "TFZ-ZPY9-TBXH-WRUW",
+  "TFZ-42WG-L9SR-XTMX",
+  "TFZ-QGMB-C744-KUYZ",
+  "TFZ-5DLH-8AMS-TPPF",
+  "TFZ-JXQW-GWZ8-WB2U",
+  "TFZ-MBV4-MKU2-DVHP",
+  "TFZ-SGAV-JETG-G9XE",
+  "TFZ-QZSX-DK75-9F9G",
+  "TFZ-SPR7-MFSB-ZU9B",
+  "TFZ-PAGY-NDXH-L6WV",
+  "TFZ-ASWL-KV8A-FH28",
+  "TFZ-HMD7-5JE8-3TVY",
+  "TFZ-ZZ59-99EG-ESEX",
+  "TFZ-3DLK-3LRX-WD9A",
+  "TFZ-GTSU-MCRV-KTM6",
+  "TFZ-59FX-37KQ-YRS9",
+  "TFZ-BLHV-R93L-AC7T",
+  "TFZ-6VQU-CEX7-ML4L",
+  "TFZ-4K8A-ML5P-SKDE",
+  "TFZ-AK96-WRUY-4AAA",
+  "TFZ-Q275-JC9X-6CER",
+  "TFZ-SUBX-JMJQ-8NUU",
+  "TFZ-X3VZ-NUHL-8U6Z",
+  "TFZ-U5VS-WCFJ-AZYL",
+  "TFZ-Z2L7-GGDX-JCME",
+  "TFZ-4R49-8C8J-WGAV",
+  "TFZ-ENXK-T3JY-VVR2",
+  "TFZ-LRS7-AENM-VXXJ",
+  "TFZ-6WBP-5JPF-ATQC",
+  "TFZ-PQYE-9CN8-J58B",
+  "TFZ-ZL59-VL8B-FHFK",
+  "TFZ-MLLX-SA8F-D778",
+  "TFZ-VUZX-XF2A-B4XL",
+  "TFZ-YYLH-TBK9-65TD",
+  "TFZ-M8GF-2KR2-DA6J",
+  "TFZ-2FTB-QWJL-7GJF",
+  "TFZ-7FT9-JAKG-VHCP",
+  "TFZ-Q2W8-RE3Y-9N4Q",
+  "TFZ-7H9T-BJE6-V5BH",
+  "TFZ-6CGN-55SR-VWEP",
+  "TFZ-XF4R-6WDE-5RFL",
+  "TFZ-QHK7-2XA4-48M6",
+  "TFZ-4RWC-FUK2-FPGS",
+  "TFZ-7B4N-2SZJ-9MKM",
+  "TFZ-CKM3-R9VE-JJ8V",
+  "TFZ-D9FR-JG2K-Z4RG",
+  "TFZ-6ULA-ASY7-D962",
+  "TFZ-7H73-C7EN-77CQ",
+  "TFZ-F526-BBPU-YK2E",
+  "TFZ-FDHS-P75N-YWAY",
+  "TFZ-PMVE-3KLN-53VG",
+  "TFZ-ZD82-ELH4-VHGP",
+  "TFZ-HAPY-XL5R-49UX",
+  "TFZ-P4NY-CJ3F-EY4A",
+  "TFZ-XHX3-E6FR-Q4Z9",
+  "TFZ-V2WH-9WFT-NBYW",
+  "TFZ-TX64-Y32A-BQCF",
+  "TFZ-GSMZ-BBP7-N85Z",
+  "TFZ-7BAC-LDTM-PK3M",
+  "TFZ-N2KL-JDG2-KYJR",
+  "TFZ-UDCT-46SW-PYX7",
+  "TFZ-V38U-AUKM-WAAA",
+  "TFZ-5RLX-N99R-86F8",
+  "TFZ-TX2R-K8D7-STP4",
+  "TFZ-NKUL-2DRW-2MGQ",
+  "TFZ-MKEG-PHQE-TZSQ",
+  "TFZ-EZSW-63G2-6JRL",
+  "TFZ-4BJM-J37M-DP7X",
+  "TFZ-JW78-VD3X-NHRN",
+  "TFZ-CEK3-P99R-UPT8",
+  "TFZ-TH4N-GSBN-CUQW",
+  "TFZ-Y9U2-4N6D-8M3B",
+  "TFZ-SGRR-K32J-Y3JM",
+  "TFZ-6YYZ-NY2B-53MU",
+  "TFZ-BT5H-VMGS-7KGY",
+  "TFZ-H2ZV-MM49-E3QY",
+  "TFZ-J3XG-WERU-DP37",
+  "TFZ-M2TR-KYZ9-X8M2",
+  "TFZ-GZXY-PUHC-M4LN",
+  "TFZ-RW34-TY9M-HD3P",
+  "TFZ-V5WT-4W8U-XGPZ",
+  "TFZ-WUH2-NQ7H-JUUZ",
+  "TFZ-7NXR-BT5H-KXHJ",
+  "TFZ-M525-REF7-ZTVB",
+  "TFZ-NDEE-G8N3-MR2W",
+  "TFZ-RUTD-8Z2Z-UHPV",
+  "TFZ-376H-LPKN-BYDV",
+  "TFZ-MA8G-LH8N-ATMW",
+  "TFZ-KHC7-DCKG-3UBE",
+  "TFZ-4NFH-3DKZ-YJBC",
+  "TFZ-MD9N-E72K-9H5N",
+  "TFZ-THCN-SA3T-VCE9",
+  "TFZ-W6L8-PDR7-XCPG",
+  "TFZ-CLGZ-YEWZ-SK5K",
+  "TFZ-AXNK-6QDP-FWH4",
+  "TFZ-E3LD-WCKS-NVNN",
+  "TFZ-YRWG-QYKR-TXN2",
+  "TFZ-6CCW-NY9B-5LRG",
+  "TFZ-KQAL-YWRW-XE9L",
+  "TFZ-JDHX-6TCT-MV5C",
+  "TFZ-AGS2-KETY-GWLK",
+  "TFZ-EVQS-LJEV-QS8K",
+  "TFZ-CE4H-TVS3-77T7",
+  "TFZ-TG3N-TW5K-YTB2",
+  "TFZ-PQCC-SBGN-H4ES",
+  "TFZ-8X4Z-WXQW-4ZX9",
+  "TFZ-DRUG-YVKB-S88F",
+  "TFZ-78HH-4L93-FVB3",
+  "TFZ-EN97-7687-SCRB",
+  "TFZ-F5SU-PSQM-T8BH",
+  "TFZ-M7KF-X7SJ-4P7W",
+  "TFZ-2X8S-F5X8-5HS9",
+  "TFZ-PHG7-4GDA-JZMR",
+  "TFZ-N3TM-AXAC-RQSD",
+  "TFZ-BU4P-AVKP-5HXT",
+  "TFZ-PDNX-JSGS-YQ5U",
+  "TFZ-PL7T-85A3-3MZ8",
+  "TFZ-A3SL-QKNA-348B",
+  "TFZ-5L6E-EXYR-V954",
+  "TFZ-HPSZ-DYMZ-UZ5E",
+  "TFZ-NZ5G-M5E7-X4NK",
+  "TFZ-AQ8H-K2VV-P383",
+  "TFZ-494P-AHQD-8DAR",
+  "TFZ-SYYA-A8WC-RARK",
+  "TFZ-UKU3-845F-BXCD",
+  "TFZ-S6QF-89YJ-2C9W",
+  "TFZ-DE5Z-TTV8-7S9L",
+  "TFZ-5KDW-9FNE-JFRS",
+  "TFZ-JV59-TB9N-L8MQ",
+  "TFZ-RPES-UPLJ-VWLZ"
+  ];
+  const KEY="tfz_claimed_codes";
+  function claimed(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}}
+  function showCount(){
+    const n=claimed().length;
+    document.getElementById("count").textContent="本设备已领取："+n+" 个";
+  }
+  function claim(){
+    const used=claimed();
+    const avail=POOL.filter(c=>!used.includes(c));
+    if(avail.length===0){alert("激活码已发放完毕，请联系「侯哥」补发");return;}
+    const code=avail[Math.floor(Math.random()*avail.length)];
+    used.push(code);
+    localStorage.setItem(KEY,JSON.stringify(used));
+    const r=document.getElementById("result");
+    r.style.display="block";
+    document.getElementById("code").textContent=code;
+    showCount();
+    document.getElementById("claim").textContent="再领一个（如多设备）";
+  }
+  document.getElementById("claim").addEventListener("click",claim);
+  document.getElementById("copy").addEventListener("click",()=>{
+    const t=document.getElementById("code").textContent;
+    navigator.clipboard&&navigator.clipboard.writeText(t);
+    document.getElementById("copy").textContent="已复制 ✓";
+    setTimeout(()=>document.getElementById("copy").textContent="点击复制",1500);
+  });
+  showCount();
+</script>
+</body>
+</html>
