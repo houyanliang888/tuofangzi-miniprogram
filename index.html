@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>土方子小百科 · 便民民间方</title>
+<meta name="theme-color" content="#07c160">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="土方子">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+  :root{
+    --green:#07c160; --green-d:#06ad56; --bg:#f2f3f5; --card:#fff;
+    --ink:#1a1a1a; --sub:#8a8a8a; --line:#eef0f2; --amber:#ff9f0a;
+    --red:#ff3b30; --blue:#34a3ff; --radius:14px;
+    --r-high:#07c160; --r-mid:#ff9f0a; --r-low:#ff3b30;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:-apple-system,"PingFang SC","Microsoft YaHei",Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); font-size:15px; line-height:1.6;
+    max-width:480px; margin:0 auto; position:relative; padding-bottom:64px;
+  }
+  /* 顶部 */
+  .topbar{position:sticky;top:0;z-index:30;background:var(--green);color:#fff;
+    padding:14px 16px 12px; box-shadow:0 2px 8px rgba(0,0,0,.06);}
+  .topbar h1{margin:0;font-size:19px;font-weight:700;letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+  .topbar h1 .leaf{font-size:20px;}
+  .topbar p{margin:3px 0 0;font-size:12px;opacity:.9;}
+  .search{margin-top:10px;background:#fff;border-radius:20px;display:flex;align-items:center;padding:8px 14px;gap:8px;}
+  .search input{border:0;outline:0;flex:1;font-size:14px;color:#333;background:transparent;}
+  .search .ico{color:var(--sub);font-size:15px;}
+  .disclaimer{background:#fff7e6;border-top:1px solid #ffe2a8;color:#9a6b00;
+    font-size:11.5px;padding:7px 14px;line-height:1.5;}
+  .disclaimer b{color:#c0392b;}
+  /* 分类胶囊 */
+  .chips{display:flex;gap:8px;overflow-x:auto;padding:12px 14px 4px;scrollbar-width:none;}
+  .chips::-webkit-scrollbar{display:none;}
+  .chip{flex:0 0 auto;background:#fff;border:1px solid var(--line);border-radius:18px;
+    padding:6px 14px;font-size:13px;color:#555;white-space:nowrap;}
+  .chip.on{background:var(--green);color:#fff;border-color:var(--green);font-weight:600;}
+  /* 列表 */
+  .list{padding:8px 14px 14px;}
+  .card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:12px;
+    box-shadow:0 1px 4px rgba(0,0,0,.04);display:flex;gap:12px;align-items:flex-start;cursor:pointer;
+    transition:transform .08s;}
+  .card:active{transform:scale(.985);}
+  .card .emoji{font-size:26px;flex:0 0 auto;width:42px;height:42px;border-radius:11px;
+    background:#eafaf0;display:flex;align-items:center;justify-content:center;}
+  .card .body{flex:1;min-width:0;}
+  .card .t{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .card .s{color:var(--sub);font-size:12.5px;margin-top:3px;
+    overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;}
+  .tag{font-size:10.5px;padding:1px 7px;border-radius:10px;font-weight:600;color:#fff;flex:0 0 auto;}
+  .tag.高{background:var(--r-high);} .tag.中{background:var(--r-mid);} .tag.低{background:var(--r-low);}
+  .tag.safe{background:#eafaf0;color:#06ad56;border:1px solid #bdeccd;}
+  .fav-btn{flex:0 0 auto;font-size:20px;color:#d9d9d9;align-self:center;background:none;border:0;padding:4px;}
+  .fav-btn.on{color:#ffb400;}
+  .empty{text-align:center;color:var(--sub);padding:50px 20px;font-size:14px;}
+  /* 底栏 */
+  .tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
+    background:#fff;border-top:1px solid var(--line);display:flex;z-index:40;}
+  .tab{flex:1;text-align:center;padding:8px 0 6px;color:var(--sub);font-size:11px;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .tab .ic{font-size:20px;}
+  .tab.on{color:var(--green);font-weight:600;}
+  /* 详情弹层 */
+  .mask{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:none;}
+  .mask.show{display:block;}
+  .sheet{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:480px;
+    max-height:88vh;overflow-y:auto;background:#f6f7f9;border-radius:18px 18px 0 0;z-index:60;
+    display:none;animation:up .25s ease;}
+  .sheet.show{display:block;}
+  @keyframes up{from{transform:translate(-50%,100%)}to{transform:translate(-50%,0)}}
+  .sheet .hd{position:sticky;top:0;background:#fff;padding:16px 16px 12px;border-radius:18px 18px 0 0;
+    display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);}
+  .sheet .hd .tt{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;}
+  .sheet .hd .x{font-size:22px;color:#bbb;background:none;border:0;}
+  .sheet .ct{padding:14px 16px 28px;}
+  .blk{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:11px;}
+  .blk .k{font-size:12px;color:var(--green);font-weight:700;margin-bottom:5px;
+    display:flex;align-items:center;gap:5px;}
+  .blk .v{font-size:14px;color:#333;line-height:1.7;}
+  .blk.warn{background:#fff4f3;border:1px solid #ffd9d4;}
+  .blk.warn .k{color:#e0392b;}
+  .blk.go{background:#eafaf0;border:1px solid #c8eccf;}
+  .blk.go .k{color:#06ad56;}
+  .reli{display:inline-flex;align-items:center;gap:6px;font-weight:700;}
+  .pill{display:inline-block;background:#f0f1f3;border-radius:8px;padding:2px 8px;font-size:12px;color:#666;margin:3px 5px 0 0;}
+  /* 分类页宫格 */
+  .grid{padding:14px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+  .gc{background:#fff;border-radius:14px;padding:18px 14px;box-shadow:0 1px 4px rgba(0,0,0,.04);cursor:pointer;}
+  .gc .e{font-size:30px;} .gc .n{font-weight:700;margin-top:8px;font-size:15px;}
+  .gc .c{color:var(--sub);font-size:12px;margin-top:2px;}
+  /* 辟谣 */
+  .myth{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:11px;border-left:4px solid var(--red);}
+  .myth .bad{font-weight:700;color:#e0392b;}
+  .myth .good{color:#06ad56;font-weight:600;margin-top:4px;}
+  .myth .why{color:#777;font-size:13px;margin-top:4px;}
+  /* 关于 */
+  .about{padding:16px 16px 28px;}
+  .about .box{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+  .about h3{margin:0 0 8px;font-size:15px;color:var(--green);}
+  .about p{margin:0 0 12px;font-size:13.5px;color:#444;line-height:1.8;}
+  .about .big{background:#fff7e6;color:#9a6b00;font-size:12.5px;padding:10px 12px;border-radius:10px;line-height:1.7;}
+  .sec-title{font-size:13px;color:var(--sub);margin:6px 2px 8px;font-weight:600;display:flex;align-items:center;gap:6px;}
+  .hidden{display:none!important;}
+  /* 激活条 / 付费墙 / 激活弹层 / 购买卡 */
+  .tfz-bar{margin:10px 14px 4px;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,#eafaf0,#fff7e6);
+    color:#06ad56;font-size:13px;font-weight:600;text-align:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid #bdeccd;}
+  .tfz-bar.on{background:#eafaf0;color:#06ad56;border-color:#7fdca0;}
+  .card.locked{opacity:.92;}
+  .card.locked .body .t{color:#888;}
+  .paywall{margin-top:14px;background:#fff7e6;border:1px solid #ffe2a8;border-radius:12px;padding:14px;}
+  .pw-t{font-size:15px;font-weight:700;color:#c0392b;margin-bottom:8px;}
+  .pw-d{font-size:13px;color:#555;line-height:1.8;margin-bottom:8px;}
+  .pw-price{font-size:14px;color:#06ad56;font-weight:700;margin-bottom:10px;}
+  .pw-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--green);color:#fff;font-size:15px;font-weight:700;cursor:pointer;}
+  .pw-note{font-size:12px;color:#999;margin-top:10px;line-height:1.7;}
+  .sheet.act .ct{padding:18px 16px 22px;}
+  .act-box input.act-input{width:100%;box-sizing:border-box;padding:14px;text-align:center;font-size:16px;letter-spacing:2px;
+    border:1.5px solid #d8dadf;border-radius:10px;margin:10px 0;font-family:monospace;}
+  .act-submit{width:100%;padding:13px;border:none;border-radius:10px;background:var(--green);color:#fff;font-size:16px;font-weight:700;cursor:pointer;}
+  .act-msg{margin-top:10px;font-size:13px;text-align:center;min-height:18px;}
+  .act-help{margin-top:14px;font-size:12px;color:#888;line-height:1.8;background:#f7f8fa;border-radius:10px;padding:12px;}
+  .buy-card{margin-top:14px;background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid #ffe2a8;}
+  .buy-t{font-size:15px;font-weight:700;color:#c0392b;margin-bottom:8px;}
+  .buy-d{font-size:13px;color:#555;line-height:1.8;margin-bottom:12px;}
+  .buy-btn{width:100%;padding:12px;border:none;border-radius:10px;background:var(--green);color:#fff;font-size:15px;font-weight:700;cursor:pointer;}
+  .buy-line{font-size:12px;color:#999;margin-top:10px;text-align:center;line-height:1.7;}
+  .buy-status{font-size:13px;text-align:center;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1><span class="leaf">🌿</span>土方子小百科</h1>
+  <p>真实 · 可靠 · 便民 · 利他　|　民间经验 + 科学验证</p>
+  <div class="search">
+    <span class="ico">🔍</span>
+    <input id="kw" type="text" placeholder="搜症状或方名：感冒、咳嗽、烫伤、睡不着…" oninput="onSearch()">
+  </div>
+</div>
+<div class="disclaimer">
+  ⚠️ <b>健康提示</b>：本App收录民间经验与家庭护理法，<b>仅供日常参考，不能替代医生诊断与治疗</b>。急症、重症、孕产妇、婴幼儿及慢病患者请及时就医。
+</div>
+<div class="tfz-bar" id="tfzBar" onclick="openActivate()"></div>
+
+<!-- 首页 -->
+<div id="view-home">
+  <div class="chips" id="chips"></div>
+  <div class="list" id="list"></div>
+</div>
+
+<!-- 分类 -->
+<div id="view-cat" class="hidden">
+  <div class="grid" id="catGrid"></div>
+</div>
+
+<!-- 收藏 -->
+<div id="view-fav" class="hidden">
+  <div class="list" id="favList"></div>
+</div>
+
+<!-- 辟谣 -->
+<div id="view-myth" class="hidden">
+  <div class="list" id="mythList" style="padding-top:14px;"></div>
+</div>
+
+<!-- 关于 -->
+<div id="view-about" class="hidden">
+  <div class="about">
+    <div class="sec-title">📖 关于本App</div>
+    <div class="box">
+      <h3>我们为什么做这个</h3>
+      <p>很多小毛病，老人传下来的土方法确实管用；但网上土方子鱼龙混杂，有的不但无效还可能害人。我们把广为流传、低风险、且有科学依据的民间方整理成册，并专门列出"危险伪土方"逐一辟谣，让好方法真正便民、利他。</p>
+      <h3>内容来源</h3>
+      <p>综合公开科普资料（人民日报、科普中国、中国家庭报、多家医院官微、光明日报等）与民间经验，按"可靠性"分级标注，并附"何时必须就医"提醒。</p>
+      <h3>可靠性怎么看</h3>
+      <p>
+        <span class="pill" style="color:#06ad56;border:1px solid #bdeccd;background:#eafaf0;">高</span> 与现代家庭护理/急救一致<br>
+        <span class="pill" style="color:#ff9f0a;border:1px solid #ffe2a8;background:#fff7e6;">中</span> 广为流传、多数人有效但因人而异<br>
+        <span class="pill" style="color:#ff3b30;border:1px solid #ffd9d4;background:#fff4f3;">低</span> 偏经验/药材，建议先咨询专业人士
+      </p>
+    </div>
+    <div class="big" style="margin-top:12px;">
+      🚨 <b>郑重声明</b>：土方子是民间经验，不是"包治百病"。遇到以下情况请立即就医——持续高烧、剧烈疼痛、呼吸困难、出血不止、昏迷抽搐、外伤骨折、孕婴幼及慢病患者病情异常。本App不构成医疗建议，使用后果自负，必要时请咨询执业医师。
+    </div>
+    <div class="buy-card">
+      <div class="buy-t">🔓 完整版解锁（一次性 6.66 元）</div>
+      <div class="buy-d">免费已开放 <b>12 个常用方子 + 10 条救命辟谣</b>。完整版再开放 <b>158 个方子</b>（含男科/妇科/更年期/三高/儿科推拿等垂直板块），每条带做法、疗程、人群方案、就医信号。</div>
+      <button class="buy-btn" onclick="openActivate()">输入激活码 / 获取激活码</button>
+
+      <!-- 联系方式区 -->
+      <div style="margin-top:16px;padding-top:14px;border-top:1px dashed #e0e0e0;">
+        <div style="font-size:13px;font-weight:600;color:#333;margin-bottom:10px;">📱 联系侯哥（付款领码 / 售后）</div>
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <!-- 微信二维码 -->
+          <img src="微信二维码_侯哥.jpg" alt="微信二维码" style="width:100px;height:100px;border-radius:10px;border:1.5px solid #e8c8e0;flex-shrink:0;object-fit:cover;" />
+          <!-- 右侧信息 -->
+          <div style="flex:1;font-size:12.5px;line-height:2;color:#555;">
+            <div><b>微信号：</b><span style="color:#07c160;font-weight:600;">ZNGHS_HYL</span></div>
+            <div><b>小红书：</b>侯哥智改</div>
+            <div style="font-size:11.5px;color:#999;margin-top:4px;">↑ 微信扫一扫 或 搜索上方号添加<br>发 6.66 元红包，秒发激活码</div>
+          </div>
+        </div>
+      </div>
+      <div class="buy-status" id="tfzStatus"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 详情弹层 -->
+<div class="mask" id="mask" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="hd">
+    <div class="tt" id="sTitle"></div>
+    <button class="x" onclick="closeSheet()">×</button>
+  </div>
+  <div class="ct" id="sBody"></div>
+</div>
+
+<!-- 激活弹层 -->
+<div class="mask" id="actMask" onclick="closeActivate()"></div>
+<div class="sheet act" id="actSheet">
+  <div class="hd">
+    <div class="tt">🔓 解锁完整版（6.66 元）</div>
+    <button class="x" onclick="closeActivate()">×</button>
+  </div>
+  <div class="ct">
+    <div class="act-box">
+      <p style="font-size:14px;color:#555;line-height:1.6;">输入你购买的 6.66 元激活码，永久解锁全部 170 个方子 + 10 条辟谣。</p>
+      <input id="actCode" class="act-input" placeholder="TFZ-XXXX-XXXX-XXXX" oninput="this.value=this.value.toUpperCase()" />
+      <button class="act-submit" onclick="submitActivate()">立即解锁</button>
+      <div class="act-msg" id="actMsg"></div>
+      <div class="act-help">
+        💡 没激活码？两种方式获取：<br>
+        ① 加侯哥微信 <b>ZNGHS_HYL</b>，发 6.66 元红包，秒发码；<br>
+        ② 小红书店铺「侯哥智改」下单「土方子小百科完整版」。<br>
+        <span style="color:#ff9f0a;">⚠️ 本App为便民知识工具，激活码仅解锁内容，不涉及任何医疗诊断服务。</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 底栏 -->
+<div class="tabbar">
+  <div class="tab on" data-v="home" onclick="switchTab('home')"><span class="ic">🏠</span>首页</div>
+  <div class="tab" data-v="cat" onclick="switchTab('cat')"><span class="ic">📚</span>分类</div>
+  <div class="tab" data-v="fav" onclick="switchTab('fav')"><span class="ic">⭐</span>收藏</div>
+  <div class="tab" data-v="myth" onclick="switchTab('myth')"><span class="ic">🚫</span>辟谣</div>
+  <div class="tab" data-v="about" onclick="switchTab('about')"><span class="ic">ℹ️</span>关于</div>
+</div>
+
+<script>
+/* ===== 数据：民间土方子（可靠性分级 + 就医信号） ===== */
+const CATS = [
+  {key:'all', name:'全部'},
+  {key:'感冒', name:'感冒风寒'},
+  {key:'咳嗽', name:'咳嗽咽痒'},
+  {key:'肠胃', name:'肠胃消化'},
+  {key:'睡眠', name:'睡眠安神'},
+  {key:'外伤', name:'皮肤外伤'},
+  {key:'便民', name:'便民妙招'},
+  {key:'皮肤', name:'皮肤护理'},
+  {key:'痛症', name:'痛症缓解'},
+  {key:'五官', name:'五官不适'},
+  {key:'解酒', name:'解酒醒酒'},
+  {key:'其他', name:'其他常见'},
+];
+
+const DATA = [
+
+  /* —— 感冒 —— */
+  {"id":1,"cat":"感冒","emoji":"🍵","name":"生姜红糖水（姜汤）","reli":"中","sym":"风寒感冒初期：怕冷、流清涕、轻微头痛、无汗","mat":"生姜3片、红糖10克","method":"加水煮开，趁热服下，盖被让身体微微出汗即可。","usage":"趁热温服，服后盖被微微出汗；每日1–2次。","course":"风寒感冒初期连服1–2天，汗出热退即停；超过3天不愈停用并就医。","folk":"生姜发汗解表、温中散寒，是民间应对受凉感冒最常用的方法。","populations":[{"g":"儿童","t":"3岁以上减半量；3岁以下及婴儿不建议自行服用，请先咨询医生。"},{"g":"老人","t":"糖尿病老人少放糖或换少许冰糖；出汗后及时保暖防受凉。"},{"g":"孕妇/产妇","t":"孕早期慎用大量生姜，少量调味可以，建议咨询中医师。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病人控制糖量；胃溃疡者姜辛辣，少量。"},{"g":"过敏体质","t":"极少见，有姜过敏史者禁用。"}],"caution":"①风热感冒（咽喉肿痛、黄涕、发热重）不适用；②糖尿病人少放糖；③仅限感冒初期轻症。","doctor":"高烧＞38.5℃、咳嗽加重、3天不愈、胸闷气促，立即就医。"},
+  {"id":2,"cat":"感冒","emoji":"🥣","name":"葱白生姜粥","reli":"中","sym":"风寒感冒：恶寒、鼻塞流清涕、周身酸痛","mat":"生姜30克、葱白50克、粳米100克","method":"粳米先煮粥，将姜、葱白切细丝加入同煮沸，每日2次趁热服。","usage":"每日2次趁热服，连粥带汤一起吃。","course":"感冒初期连吃2–3天，症状缓解即停。","folk":"葱白散寒发汗、生姜温中，米粥护胃，适合体虚怕药的老人小孩。","populations":[{"g":"儿童","t":"减量，粥要煮软防呛。"},{"g":"老人","t":"细嚼慢咽，防呛咳。"},{"g":"孕妇/产妇","t":"适量，孕早期不宜过量。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"胃热反酸者不宜；糖尿病注意米量。"}],"caution":"只适合风寒型；风热及咽喉肿痛者不宜。","doctor":"症状无缓解或加重，及时就诊。"},
+  {"id":3,"cat":"感冒","emoji":"🌿","name":"桑菊薄荷茶（风热）","reli":"中","sym":"风热感冒：发热明显、咽痛、黄涕、口干","mat":"桑叶10克、菊花10克、薄荷5克（或加麦冬）","method":"沸水冲泡代茶饮，每日1剂。","usage":"沸水冲泡代茶，温凉皆可，每日1剂分次饮。","course":"风热症状期连服2–3天，无效就医。","folk":"桑叶菊花疏散风热，薄荷清利头目，是民间\"上火感冒\"的清解法。","populations":[{"g":"儿童","t":"减半量，薄荷少量。"},{"g":"老人","t":"脾胃虚寒、易腹泻者少饮。"},{"g":"孕妇/产妇","t":"慎用薄荷（尤其孕早期）。"},{"g":"过敏体质","t":"注意菊花过敏史者禁用。"}],"caution":"①体质虚寒者少饮；②孕妇慎用薄荷；③症状重不要硬扛。","doctor":"持续高热、扁桃体化脓、精神差，立即就医。"},
+
+  /* —— 咳嗽 —— */
+  {"id":4,"cat":"咳嗽","emoji":"🍐","name":"冰糖雪梨（蜂蜜炖梨）","reli":"中","sym":"秋燥/肺燥干咳、咽喉干痒、少痰难咯","mat":"雪梨1个、冰糖或蜂蜜适量","method":"梨去核，中心放冰糖，隔水炖20–30分钟，喝汤吃梨；或加蜂蜜。","usage":"炖好后喝汤吃梨，温热服，每日1次。","course":"干咳期连服3–5天，不愈就医。","folk":"梨生津润燥、蜂蜜润肺，是经典的民间润肺止咳方。","populations":[{"g":"儿童","t":"1岁以上可用；1岁内婴儿禁蜂蜜。"},{"g":"老人","t":"糖尿病老人去冰糖，改用少量枸杞。"},{"g":"孕妇/产妇","t":"可用，冰糖少量。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病人去糖；脾胃虚寒腹泻者少用。"},{"g":"痰湿体质","t":"痰多白稀者不宜。"}],"caution":"①风寒咳嗽（白稀痰、怕冷）不宜；②1岁内婴儿不能吃蜂蜜；③痰多黄稠需就医。","doctor":"咳嗽超2周、痰中带血、喘憋、发烧，及时就诊。"},
+  {"id":5,"cat":"咳嗽","emoji":"🫖","name":"罗汉果泡水","reli":"中","sym":"咽喉干痒、声音嘶哑、燥热咳嗽","mat":"罗汉果1/4–1/2个","method":"掰小块用开水冲泡代茶饮。","usage":"掰1/4–1/2个开水冲泡，可反复冲，代茶饮。","course":"咽喉不适期连饮3–5天。","folk":"罗汉果甘凉，清热润肺、利咽开音，被誉为\"神仙果\"。","populations":[{"g":"儿童","t":"适量，偏甜可稀释。"},{"g":"老人","t":"脾胃虚寒、易腹泻者少饮。"},{"g":"孕妇/产妇","t":"可用，无禁忌。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病人友好（无糖）；胃寒者少量。"}],"caution":"偏凉，脾胃虚寒、易腹泻者少饮。","doctor":"咽痛剧烈伴高烧、扁桃体化脓，就医。"},
+  {"id":6,"cat":"咳嗽","emoji":"🍊","name":"陈皮生姜水（化痰）","reli":"中","sym":"白痰多、受凉后咳嗽、晨起痰多","mat":"陈皮3克、生姜2片","method":"清水煮20分钟，微温饮用，可加少许雪梨。","usage":"温服，每日2次。","course":"受凉咳嗽期3–5天。","folk":"陈皮理气燥湿化痰，生姜温肺散寒，化解残留白痰。","populations":[{"g":"儿童","t":"减量。"},{"g":"老人","t":"胃热反酸者少用。"},{"g":"孕妇/产妇","t":"少量。"},{"g":"阴虚火旺","t":"少用，以免上火。"}],"caution":"黄痰、热咳不适用；胃热反酸者适量。","doctor":"咳嗽迁延不愈或伴喘息，就诊。"},
+  {"id":7,"cat":"咳嗽","emoji":"🧂","name":"温盐水漱口（咽痛）","reli":"高","sym":"咽喉肿痛、晨起咽痛、轻微扁桃体炎","mat":"温水1杯、食盐少许","method":"调成淡盐水，仰头漱咽喉部，每日数次。","usage":"一杯温淡盐水仰漱咽喉，每日3–4次，含漱后吐出勿吞。","course":"咽痛期可连用3–5天。","folk":"淡盐水有助清洁咽部、缓解肿痛，是家庭常用护理法。","populations":[{"g":"儿童","t":"需成人监护，防误吞。"},{"g":"老人","t":"高血压可用淡盐，浓度要低。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"婴幼儿","t":"不适用，用棉签轻拭或就医。"}],"caution":"仅为缓解，不能代替治疗；盐水别太浓。","doctor":"持续剧痛、高烧、张口困难、扁桃体化脓，立即就医。"},
+
+  /* —— 肠胃 —— */
+  {"id":8,"cat":"肠胃","emoji":"🔴","name":"山楂陈皮水（消食）","reli":"中","sym":"肉食积滞、腹胀、嗳气、没胃口","mat":"山楂5克、陈皮3克（或炒麦芽10克）","method":"加水煎煮15分钟，温服。","usage":"温服，饭后饮，每日1–2次。","course":"积食期连服2–3天。","folk":"山楂消食化积、善消油腻，陈皮理气健脾。","populations":[{"g":"儿童","t":"减量，胃酸少可用。"},{"g":"老人","t":"胃酸偏少者适用。"},{"g":"孕妇/产妇","t":"慎用山楂，尤其有流产史者禁用。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"胃溃疡/反酸者忌；糖尿病人无糖。"}],"caution":"①胃酸过多、胃溃疡者少饮；②孕妇慎用山楂。","doctor":"剧烈腹痛、呕吐、便血，立即就医。"},
+  {"id":9,"cat":"肠胃","emoji":"🌾","name":"山药小米粥（健脾）","reli":"中","sym":"脾虚积食、吃一点就胀、便溏、小孩脾胃弱","mat":"铁棍山药1段、小米适量","method":"山药去皮切块，与小米小火慢熬30–40分钟至浓稠，清淡无糖最好。","usage":"温服，作主食或加餐，每日1–2次。","course":"可长期调理；急性腹泻发作期先不吃。","folk":"山药健脾益气、小米和胃，是温和的日常养胃方。","populations":[{"g":"儿童","t":"可研碎成泥，易消化。"},{"g":"老人","t":"软烂为宜。"},{"g":"孕妇/产妇","t":"可用，产后养胃佳品。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病人适量（山药含淀粉）；便秘者山药减量。"}],"caution":"调理性质，急性肠胃炎发作期不宜。","doctor":"持续腹泻、脱水、血便，就医。"},
+  {"id":10,"cat":"肠胃","emoji":"🍚","name":"焦米粥（止泻）","reli":"中","sym":"轻微腹泻、消化不良性便溏","mat":"大米适量","method":"大米不放油小火炒至焦黄，加水煮成粥。","usage":"温服，少量多次。","course":"轻泻期1–2天，同时配合补液。","folk":"炒焦的米有收敛止泻、健脾作用，民间常用于小儿轻度腹泻。","populations":[{"g":"儿童","t":"减量，注意补液防脱水。"},{"g":"老人","t":"重点防脱水，尿少口干即就医。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"慢性肠炎","t":"反复发作需就医，勿长期自疗。"}],"caution":"①只是辅助；②出现脱水（尿少、口干、乏力）要补水并就医。","doctor":"血便、高烧、严重脱水、腹痛剧烈，立即就医。"},
+  {"id":11,"cat":"肠胃","emoji":"🍯","name":"蜂蜜水 / 火龙果（通便）","reli":"中","sym":"燥热便秘、大便干结","mat":"蜂蜜1勺、温水；或火龙果1个","method":"晨起温蜂蜜水空腹饮；或直接吃火龙果。","usage":"晨起空腹温蜂蜜水；或每天吃火龙果1个。","course":"便秘期连用2–3天，排便规律后停用。","folk":"蜂蜜润肠、火龙果富纤维，是民间温和的通便法。","populations":[{"g":"儿童","t":"蜂蜜减半；1岁内禁蜂蜜（肉毒风险）。"},{"g":"老人","t":"糖尿病人慎蜂蜜，改用火龙果。"},{"g":"孕妇/产妇","t":"可用火龙果，产后便秘友好。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病人慎蜂蜜。"}],"caution":"①1岁内婴儿禁蜂蜜；②长期依赖需查因。","doctor":"便秘伴腹痛、便血、体重下降，或突然便秘，就医。"},
+  {"id":12,"cat":"肠胃","emoji":"🚶","name":"饭后慢走 + 摩腹","reli":"高","sym":"饭后腹胀、消化慢","mat":"无","method":"饭后缓步10分钟；或平卧以肚脐为中心顺时针轻柔按摩10–15次。","usage":"饭后30分钟缓步10分钟，或睡前顺时针摩腹10–15次。","course":"日常坚持，作为助消化习惯。","folk":"散步助运化，摩腹促进肠蠕动，是最安全的助消化法。","populations":[{"g":"儿童","t":"饭后散步即可。"},{"g":"老人","t":"慢走防跌倒。"},{"g":"孕妇/产妇","t":"摩腹轻柔，饭后不宜剧烈运动。"},{"g":"术后/腹疝","t":"遵医嘱，避免腹压过大。"}],"caution":"刚吃完别剧烈运动；胃溃疡者按摩轻柔。","doctor":"反复腹胀伴消瘦、黑便，就诊排查。"},
+
+  /* —— 睡眠 —— */
+  {"id":13,"cat":"睡眠","emoji":"🦶","name":"温水泡脚助眠","reli":"高","sym":"入睡难、睡眠浅、手脚冰凉","mat":"40℃左右温水，可加生姜/薰衣草少许","method":"睡前泡脚15–20分钟，身体微暖即可。","usage":"40℃左右泡15–20分钟，可加姜/薰衣草，睡前进行。","course":"日常调理，连续1–2周看睡眠改善。","folk":"温水泡脚放松身心、引火归元，是公认的助眠好习惯。","populations":[{"g":"儿童","t":"水温略低、时间缩短至10分钟。"},{"g":"老人","t":"防烫伤，建议有人陪同，水温用手肘试。"},{"g":"孕妇/产妇","t":"可用，但禁高温。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病/下肢静脉血栓者先咨询医生；饭后半小时内不宜。"}],"caution":"①糖尿病患者注意水温防烫伤；②下肢静脉血栓者先咨询医生。","doctor":"长期失眠伴情绪异常、心慌，建议就医。"},
+  {"id":14,"cat":"睡眠","emoji":"🌼","name":"酸枣仁百合粥","reli":"低","sym":"心肝血虚、思虑多、眠差多梦","mat":"炒酸枣仁15克、百合10克、小米50克","method":"酸枣仁捣碎与百合适量同小米熬粥，每周2–3次。","usage":"晚间温服1碗，每周2–3次。","course":"调理2–4周观察。","folk":"酸枣仁养心安神、百合清心除烦，中医常用安神方。","populations":[{"g":"儿童","t":"需中医辨证后再用。"},{"g":"老人","t":"减量。"},{"g":"孕妇/产妇","t":"慎用药材，请咨询中医。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"长期服请先咨询医生。"}],"caution":"属中医药膳，建议先经中医辨证；睡前1小时远离电子屏效果更佳。","doctor":"失眠严重影响白天功能，就医评估。"},
+  {"id":15,"cat":"睡眠","emoji":"🍇","name":"桂圆红枣茶","reli":"低","sym":"气血不足、思虑过度、睡眠浅","mat":"桂圆肉10枚、红枣数枚","method":"加水炖煮，睡前1小时温服。","usage":"温服，睡前1小时1杯。","course":"调理2–4周。","folk":"桂圆补心脾、红枣养血安神，适合虚性眠差。","populations":[{"g":"儿童","t":"少量。"},{"g":"老人","t":"体质虚者可用。"},{"g":"孕妇/产妇","t":"产后气血虚可用。"},{"g":"上火/湿热体质","t":"少用，易上火。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病人控糖。"}],"caution":"①上火体质、口干舌红者少饮；②糖尿病人控糖。","doctor":"失眠严重，就医。"},
+
+  /* —— 外伤 —— */
+  {"id":16,"cat":"外伤","emoji":"🔥","name":"烫伤：流动凉水冲","reli":"高","sym":"轻度烫伤、热水/油溅伤","mat":"流动冷水、干净纱布","method":"立即用流动冷水冲15–20分钟（严重时更久），至疼痛明显减轻；后用干净纱布覆盖；起水泡别弄破。","usage":"流动冷水持续冲洗，之后纱布覆盖，可外涂烫伤膏，每日按医嘱换药。","course":"急救即做；小伤数日愈合，红肿化脓就医。","folk":"这是标准急救\"冲—脱—泡—盖—送\"的第一步，能迅速降温、减轻损伤。","populations":[{"g":"儿童","t":"立即冲并安抚，防止抓挠创面。"},{"g":"老人","t":"防休克，保暖，观察意识。"},{"g":"孕妇/产妇","t":"同常规处理。"},{"g":"所有人","t":"起水泡、皮肤发白焦黑、面积大立即就医。"}],"caution":"❌ 严禁涂牙膏、酱油、香油、大酱！会污染创面、引发感染，还影响医生判断。","doctor":"起水泡、皮肤发白或焦黑、面积大、烫到脸/手/会阴，立即就医。"},
+  {"id":17,"cat":"外伤","emoji":"🩹","name":"小割伤 / 擦伤处理","reli":"高","sym":"表皮割伤、擦伤、小出血","mat":"清水/生理盐水、碘伏、干净纱布","method":"用清水冲洗伤口，碘伏消毒，干净纱布按压止血并包扎。","usage":"清水冲洗→碘伏消毒→纱布按压止血包扎，每日换药。","course":"小伤2–3天愈合，红肿渗液就医。","folk":"清洁+消毒+保护，是基础伤口护理。","populations":[{"g":"儿童","t":"防抓挠，家长协助换药。"},{"g":"老人","t":"愈合慢，注意营养。"},{"g":"孕妇/产妇","t":"同常规。"},{"g":"慢病(高血压/糖尿病/胃病)","t":"糖尿病人伤口难愈，及时就医。"}],"caution":"❌ 红药水与碘酒不能同用（生成剧毒碘化汞）；❌ 别用酒精原液、别涂香灰。","doctor":"出血不止、伤口深/脏、动物咬伤、异物残留，就医。"},
+  {"id":18,"cat":"外伤","emoji":"🦵","name":"扭伤：先冰敷后热敷","reli":"高","sym":"脚踝/手腕扭伤、肿痛","mat":"冰袋、弹性绷带","method":"RICE原则：休息、冰敷15–20分钟（隔毛巾）、弹性绷带包扎、抬高患肢；48小时后再热敷。","usage":"先冰敷15–20分钟(隔毛巾)→包扎→抬高；48小时后改热敷。","course":"急性期2–3天，完全恢复约1–2周。","folk":"急性期冷敷收缩血管止血肿，后期热敷促进吸收。","populations":[{"g":"儿童","t":"制动，防二次伤。"},{"g":"老人","t":"优先排查骨折（骨质疏松）。"},{"g":"孕妇/产妇","t":"少用药，以固定休息为主。"},{"g":"所有人","t":"剧痛、畸形、不能负重立即就医。"}],"caution":"❌ 刚扭伤忌揉搓、忌马上热敷（会加重肿胀出血）。","doctor":"剧痛不能负重、畸形、麻木，排查骨折，立即就医。"},
+  {"id":19,"cat":"外伤","emoji":"🦟","name":"蚊虫叮咬止痒","reli":"中","sym":"蚊子、小虫叮咬后红肿痒","mat":"肥皂水、冷敷、芦荟胶/炉甘石","method":"肥皂水冲洗中和酸性毒液，冷敷止痒，再涂芦荟胶或炉甘石洗剂。","usage":"肥皂水冲洗→冷敷→涂芦荟胶/炉甘石，每日2–3次。","course":"瘙痒期连用至消退。","folk":"肥皂水弱碱性能中和蚊虫酸性毒液，是家庭常用法。","populations":[{"g":"儿童","t":"防抓破感染，剪短指甲。"},{"g":"老人","t":"皮肤薄，动作轻柔。"},{"g":"孕妇/产妇","t":"可用炉甘石（相对安全）。"},{"g":"过敏体质","t":"警惕全身皮疹、呼吸困难等过敏反应。"}],"caution":"❌ 别抓破防感染；过敏体质、肿胀明显者就医。","doctor":"出现呼吸困难、全身皮疹、头晕（过敏休克），立即急诊。"},
+  {"id":20,"cat":"外伤","emoji":"☀️","name":"晒伤护理","reli":"中","sym":"日晒后皮肤发红、灼热、疼痛","mat":"冷毛巾、芦荟胶","method":"冷毛巾冷敷，涂芦荟胶，多喝水，避免再次暴晒。","usage":"冷毛巾敷15分钟，涂芦荟胶，多饮水，避晒。","course":"2–3天缓解。","folk":"冷敷降温、芦荟舒缓，是晒后基础护理。","populations":[{"g":"儿童","t":"防晒优先，减少直晒。"},{"g":"老人","t":"皮肤薄，注意补水。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"所有人","t":"水疱、发烧、寒战就医。"}],"caution":"❌ 别用偏方乱敷；皮肤破损处慎用。","doctor":"起大水疱、发烧、寒战，就医。"},
+
+  /* —— 便民 —— */
+  {"id":21,"cat":"便民","emoji":"👃","name":"流鼻血：低头捏鼻翼","reli":"高","sym":"鼻出血","mat":"无","method":"坐下身体前倾、张嘴呼吸，拇指食指捏住鼻翼（软鼻处）向后上方挤压10分钟。","usage":"坐前倾、捏鼻翼10分钟，可冰敷鼻梁辅助。","course":"一次性处理；反复发作者排查病因。","folk":"压迫鼻翼血管止血，是正确做法。","populations":[{"g":"儿童","t":"安抚情绪，避免慌张。"},{"g":"老人","t":"排查高血压等诱因。"},{"g":"孕妇/产妇","t":"同常规。"},{"g":"所有人","t":"＞20–30分钟不止或量大呛咳立即就医。"}],"caution":"❌ 严禁仰头塞纸！仰头会让血倒流呛入气管，甚至窒息。","doctor":"按压2次仍不止（＞20–30分钟）、外伤后出血、量大呛咳，立即就医。"},
+  {"id":22,"cat":"便民","emoji":"🐟","name":"鱼刺卡喉：别喝醋吞饭","reli":"高","sym":"吃鱼被刺卡住","mat":"镊子（可见时）","method":"光线好时若能看到刺，用手或镊子轻轻夹出；看不到或吞不下，立刻就医。","usage":"可见刺用镊子取；否则禁食禁水，立即就医。","course":"一次性，无反复。","folk":"正确处理是取出或交给医生，不是硬咽。","populations":[{"g":"儿童","t":"进食时专人看护，防卡喉。"},{"g":"老人","t":"同常规，注意义齿。"},{"g":"孕妇/产妇","t":"同常规。"},{"g":"所有人","t":"不可硬吞饭团，以免刺更深。"}],"caution":"❌ 喝醋不能软化鱼刺、吞饭团馒头会把刺推更深，甚至刺破食管！","doctor":"任何吞不下、疼痛、流涎、呼吸困难，马上急诊。"},
+  {"id":23,"cat":"便民","emoji":"🚌","name":"晕车：姜 / 橘皮 / 风油精","reli":"中","sym":"乘车船飞机眩晕、恶心","mat":"生姜片、新鲜橘皮、风油精","method":"出发前含一片姜，或闻新鲜橘皮、风油精提神。","usage":"出发前30分钟含姜片/闻橘皮/风油精，途中可重复。","course":"每次乘车前使用。","folk":"姜与柑橘芳香能镇呕提神，民间防晕车常用。","populations":[{"g":"儿童","t":"姜片减量；风油精避免入眼。"},{"g":"老人","t":"可用。"},{"g":"孕妇/产妇","t":"慎用风油精（含樟脑），改用姜片。"},{"g":"晕动症重者","t":"备正规晕车药（遵医嘱）。"}],"caution":"严重晕动症可备正规晕车药（遵医嘱）；孕妇慎用风油精。","doctor":"剧烈呕吐脱水、意识模糊，就医。"},
+  {"id":24,"cat":"便民","emoji":"💨","name":"打嗝：憋气 / 喝水弯腰","reli":"中","sym":"膈肌痉挛（打嗝）不止","mat":"温水","method":"屏气数次；或小口多次咽温水；弯腰大口喝几口。","usage":"屏气数次/小口温水/弯腰喝水，可重复尝试。","course":"一般数分钟内止；反复＞48小时就医。","folk":"干扰膈神经节律，多数能止住。","populations":[{"g":"儿童","t":"防呛到。"},{"g":"老人","t":"排查心肺原因。"},{"g":"孕妇/产妇","t":"同常规。"},{"g":"所有人","t":"伴胸痛/呕吐立即就医。"}],"caution":"❌ 别猛灌、别呛到。","doctor":"打嗝持续超48小时、伴胸痛/呕吐，就医。"},
+  {"id":25,"cat":"便民","emoji":"🥃","name":"解酒：蜂蜜水 / 温盐水","reli":"中","sym":"酒后头痛、口干、乏力","mat":"蜂蜜、温水、淡盐水","method":"蜂蜜水、多喝温水促进代谢，侧卧休息。","usage":"蜂蜜水+多喝温水，侧卧休息，次日补水补觉。","course":"酒后一次处理，次日恢复。","folk":"蜂蜜助解酒、温水补水，是温和的醒酒法。","populations":[{"g":"儿童","t":"不适用（未成年人禁酒）。"},{"g":"老人","t":"肝代谢慢，更忌过量。"},{"g":"孕妇/产妇","t":"禁酒。"},{"g":"所有人","t":"昏迷、呼吸慢、呕吐窒息风险，立刻拨打120。"}],"caution":"❌ 严重醉酒昏迷、呕吐有窒息风险，立即就医；葛花等药材需辨证。","doctor":"昏迷、呼吸慢、呕吐窒息风险，立刻拨打120。"},
+  {"id":26,"cat":"便民","emoji":"👄","name":"口腔溃疡：淡盐水 + B2","reli":"中","sym":"复发性口腔溃疡、口疮","mat":"淡盐水、维生素B2、西瓜霜","method":"淡盐水漱口，补充B族维生素，局部用西瓜霜。","usage":"淡盐水漱口每日3–4次，饭后用；配合补B2、局部西瓜霜。","course":"1–2周多自愈，不愈就医。","folk":"清洁口腔、补充营养，多数口疮1–2周自愈。","populations":[{"g":"儿童","t":"监护漱口，防误吞。"},{"g":"老人","t":"排查义齿摩擦。"},{"g":"孕妇/产妇","t":"可用局部药，慎用口服药。"},{"g":"反复发作者","t":"查免疫/营养均衡。"}],"caution":"❌ 别用刺激性偏方戳破。","doctor":"2周不愈、反复发作、伴白斑，就诊排查。"},
+  {"id":27,"cat":"便民","emoji":"💆","name":"落枕：热敷 + 轻活动","reli":"中","sym":"晨起脖子僵硬、转动痛","mat":"热毛巾","method":"48小时后热敷，配合缓慢轻柔转头，不暴力扳颈。","usage":"48小时后热敷，轻柔转头，每次5–10分钟，每日2–3次。","course":"3–5天恢复。","folk":"热敷松筋、渐进活动恢复。","populations":[{"g":"儿童","t":"动作轻柔。"},{"g":"老人","t":"排查颈椎问题。"},{"g":"孕妇/产妇","t":"同常规。"},{"g":"所有人","t":"伴手麻、头晕、剧痛就医（排查颈椎）。"}],"caution":"❌ 别让人硬掰脖子。","doctor":"伴手麻、头晕、剧烈痛（排查颈椎），就医。"},
+
+  /* —— 皮肤 —— */
+  {"cat":"皮肤","emoji":"🦶","name":"脚气（足癣）日常护理","reli":"中","sym":"脚部瘙痒、脱皮、起水疱、脚趾间发白糜烂（真菌感染）","mat":"透气棉袜、抗真菌药膏（如特比萘芬/酮康唑，需药店购买）","method":"每日温水洗脚后彻底擦干趾缝，穿透气鞋袜、每日换袜；痒处按说明书涂抗真菌药膏，坚持足疗程（通常2–4周），鞋柜常通风晾晒。","usage":"外用为主，不口服；药膏薄涂患处及周边，涂后洗手；坚持用到症状消失后再用1周防复发。","course":"规范外用2–4周为一疗程，不可\"不痒就停\"，易复发；反复发作请皮肤科就诊。","folk":"脚气是真菌作祟，民间\"白醋泡、碘伏泡\"杀菌力不足且刺激皮肤，不推荐替代药物。","populations":[{"g":"儿童","t":"儿童脚气少见，出现应就医确诊，勿自行用药。"},{"g":"老人","t":"常伴灰指甲，需医生联合治疗；注意防滑防摔。"},{"g":"孕妇/产妇","t":"外用药相对安全，但用药前请咨询医生。"},{"g":"慢病(糖尿病/血液循环差)","t":"糖尿病足风险高，脚部任何破损立即就医，勿自行处理。"},{"g":"过敏体质","t":"先小面积试用抗真菌药，出现红疹刺痛停用。"}],"caution":"①脚气会传染，不共用拖鞋脚盆；②白醋/碘伏泡脚不能根治；③出现化脓、红肿热痛、蔓延至脚踝以上立即就医。","doctor":"水疱破溃感染、流脓、发热、单侧红肿痛（警惕丹毒/蜂窝织炎），立即皮肤科就诊。","id":28},
+  {"cat":"皮肤","emoji":"💧","name":"汗疱疹止痒护理","reli":"中","sym":"手心手指起密集小水疱、剧痒、烧灼感，春末夏初高发（特殊湿疹）","mat":"炉甘石洗剂、保湿霜","method":"未破的水疱用炉甘石洗剂外擦止痒；洗手洗脚后及时擦干再涂保湿霜修护屏障；少碰洗洁精洗衣粉，必要时戴手套。","usage":"炉甘石外涂每日2–3次（水疱破后停用）；保湿霜随时补涂。","course":"自限性，脱离诱因约2–3周可自愈；反复发作者看皮肤科。","folk":"汗疱疹不是\"汗多\"直接引起，过敏、压力、金属接触都可能诱发，冷敷缓解、热水烫洗会加重。","populations":[{"g":"儿童","t":"儿童也常见，炉甘石可用，避免抓破；家长看护剪短指甲。"},{"g":"老人","t":"相对少见，按常规护理即可。"},{"g":"孕妇/产妇","t":"外用药相对安全，严重时请看医生。"},{"g":"慢病(糖尿病)","t":"皮肤愈合慢，破溃后防感染，及时就医。"},{"g":"过敏体质","t":"排查镍/铬首饰、洗涤剂过敏源，远离诱因。"}],"caution":"①水疱破了不用炉甘石；②别狂用止汗露、别频繁用肥皂洗手；③化脓感染就医。","doctor":"水疱化脓、大面积红肿渗液、发热，及时就诊。","id":29},
+  {"cat":"皮肤","emoji":"🌡️","name":"痱子（热疹）降温干燥","reli":"中","sym":"高温闷热处起针尖大小红疹/小水疱，瘙痒灼热，婴幼儿与成人皆可发生","mat":"炉甘石洗剂、温水","method":"核心是凉快+干燥：开空调风扇降温，温水轻洗患处，外用炉甘石洗剂；穿宽松透气衣物，保持皮肤干爽。","usage":"炉甘石外涂每日2–3次（皮肤破损时停用）；保持凉爽环境。","course":"降温干燥后1–2天明显消退，持续不愈看皮肤科。","folk":"痱子和湿疹相反——痱子要\"干\"、湿疹要\"润\"，搞反了越治越凶。","populations":[{"g":"婴幼儿","t":"首选降温干燥，痱子粉仅预防用、避免误吸；红痱脓痱及时就医。"},{"g":"老人","t":"长期卧床者勤翻身、保持干爽。"},{"g":"孕妇/产妇","t":"同成人护理，注意防暑。"},{"g":"慢病(糖尿病/甲亢)","t":"代谢快易出汗，更需注意降温通风。"},{"g":"过敏体质","t":"选无香精护理产品。"}],"caution":"①痱子粉别乱涂在已长痱子处，会堵汗；②脓疱、感染用抗生素药膏需医生指导；③别用热水烫。","doctor":"出现脓痱、发热、皮肤大面积红肿渗液，立即就医。","id":30},
+  {"cat":"皮肤","emoji":"💋","name":"嘴唇干裂润护","reli":"高","sym":"唇部干燥、起皮、裂口、出血","mat":"含维E/绵羊油成分的润唇膏、加湿器","method":"涂抹滋润润唇膏，室内用加湿器，多喝水；外出戴口罩防风。切忌用舌舔、手撕、热毛巾敷。","usage":"润唇膏随时涂抹，尤其睡前厚涂一层。","course":"护理得当2–3天缓解，裂口反复不愈看口腔科。","folk":"舔嘴唇只会越舔越干——唾液蒸发带走更多水分，形成恶性循环。","populations":[{"g":"婴幼儿","t":"用婴幼儿专用润唇膏，防误食。"},{"g":"老人","t":"同成人，注意补水。"},{"g":"孕妇/产妇","t":"可用，选成分简单款。"},{"g":"慢病","t":"无特殊禁忌。"},{"g":"过敏体质","t":"选无香精、低敏配方。"}],"caution":"①不舔不撕；②裂口深、出血、化脓或长期不愈需就医排除唇炎。","doctor":"嘴唇溃烂、结厚痂、长期不愈或伴口腔症状，看口腔科/皮肤科。","id":31},
+  {"cat":"皮肤","emoji":"☀️","name":"轻度晒伤冷敷修护","reli":"中","sym":"日晒后皮肤发红、灼热、疼痛，轻度脱皮","mat":"冷毛巾/冷敷袋、芦荟胶、温水","method":"立即避光，冷毛巾或冷敷袋间断敷患处（每次15分钟），涂芦荟胶或保湿霜；多饮温水补液。","usage":"冷敷每日数次；芦荟胶薄涂，勿摩擦；避免热水烫洗。","course":"轻度2–3天缓解，脱皮期注意保湿；出现水疱为大面积晒伤。","folk":"晒伤是\"烫伤样\"损伤，降温止痛是关键，民间乱涂偏方反而刺激。","populations":[{"g":"婴幼儿","t":"婴幼儿皮肤薄，最易晒伤，以物理遮挡防晒为主，晒伤及时就医。"},{"g":"老人","t":"同成人护理。"},{"g":"孕妇/产妇","t":"可用芦荟胶物理降温。"},{"g":"慢病(红斑狼疮等光敏)","t":"光敏性疾病患者晒伤风险高，严格防晒并就医。"},{"g":"过敏体质","t":"选低敏芦荟胶。"}],"caution":"①不挤水疱、不撕皮；②严重晒伤会脱水休克；③防晒优于晒后补救。","doctor":"大面积水疱、剧烈疼痛、发热、恶心头晕（中暑/晒伤休克），立即急诊。","id":32},
+  {"cat":"皮肤","emoji":"🦶","name":"脚跟皲裂滋润法","reli":"中","sym":"足跟皮肤干燥、粗糙、开裂甚至出血疼痛","mat":"凡士林/尿素软膏、纯棉袜","method":"温水泡脚软化角质后擦干，厚涂凡士林或尿素软膏，套上纯棉袜过夜；日常减少碱性肥皂刺激。","usage":"每晚睡前厚涂并穿袜，连续1–2周；白天可薄涂保湿。","course":"坚持1–2周明显改善，干裂反复者长期保养。","folk":"脚跟角质厚、缺油缺水才会裂，封闭保湿（凡士林+袜子）比随便抹乳液有效。","populations":[{"g":"儿童","t":"少见，按需保湿即可。"},{"g":"老人","t":"老年人皮肤干、常见，坚持睡前护理。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"慢病(糖尿病)","t":"糖尿病足感觉迟钝，皲裂易感染，处理前先看医生。"},{"g":"过敏体质","t":"选低敏凡士林。"}],"caution":"①裂口深、出血、红肿化脓及时就医；②糖尿病患者勿自行修剪鸡眼老茧。","doctor":"裂口深不愈合、红肿渗液、糖尿病者足部任何破损，及时就诊。","id":33},
+  {"cat":"皮肤","emoji":"🔴","name":"非破溃皮肤瘙痒（炉甘石）","reli":"中","sym":"蚊虫包、荨麻疹、轻度皮炎等无破损处的瘙痒","mat":"炉甘石洗剂","method":"摇匀后棉签蘸取涂于瘙痒处，每日2–3次；避免抓破，抓破后停用。","usage":"外涂患处，每日2–3次，晾干后可有白色粉末，无需擦去。","course":"止痒对症，病因解除即停；反复发作者看皮肤科。","folk":"炉甘石是经典安全的止痒收敛剂，对无破损的痒有效，破皮则用反而刺激。","populations":[{"g":"婴幼儿","t":"可用，避开眼口；婴儿严重皮疹就医。"},{"g":"老人","t":"同成人。"},{"g":"孕妇/产妇","t":"外用安全。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"炉甘石本身低敏，仍先小面积试。"}],"caution":"①皮肤破损、渗液时停用；②只止痒不治本，皮疹加重就医；③眼周黏膜禁用。","doctor":"皮疹泛发、呼吸困难（过敏休克）、化脓感染，立即急诊/就诊。","id":34},
+  {"cat":"皮肤","emoji":"🧴","name":"冬季皮肤干燥护理","reli":"中","sym":"全身皮肤干痒、起白屑、洗澡后紧绷","mat":"温和沐浴露、身体乳/凡士林","method":"水温不超过40℃、缩短洗澡时间，用弱酸性温和沐浴露；洗后3分钟内全身涂身体乳锁水，室内用加湿器。","usage":"每日洗澡后及时涂润肤乳，干燥处可厚涂凡士林。","course":"整个干燥季节持续保湿，约1周缓解紧绷。","folk":"洗澡水越烫越痒——过热破坏皮脂膜，越洗越干，温水+及时润肤才是正解。","populations":[{"g":"婴幼儿","t":"用婴儿专用润肤乳，频次更高。"},{"g":"老人","t":"皮脂分泌少，最需坚持全身润肤。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"慢病(糖尿病/肾病)","t":"皮肤干痒明显，严重时排查原发病。"},{"g":"过敏体质","t":"选无香精低敏身体乳，湿疹者遵医嘱用药。"}],"caution":"①避免烫洗、过度搓澡；②瘙痒剧烈、起疹、影响睡眠看皮肤科；③警惕尿毒症/糖尿病所致皮肤瘙痒。","doctor":"全身顽固瘙痒伴黄疸、尿量少、血糖异常等，需内科排查。","id":35},
+
+  /* —— 痛症 —— */
+  {"cat":"痛症","emoji":"🔥","name":"痛经热敷","reli":"高","sym":"经期小腹坠胀、痉挛性疼痛，怕冷、腰酸","mat":"热水袋/暖宝宝、热毛巾","method":"40℃左右热敷下腹部（隔着衣物），每次15–20分钟，每日2–3次；可扩至腰骶部。","usage":"经期疼痛时热敷，隔衣使用防烫伤；配合侧卧蜷腿放松。","course":"每次15–20分钟，疼痛缓解即停；每次月经可重复使用。","folk":"热敷促进盆腔血液循环、放松痉挛的子宫平滑肌，是公认的第一道防线。","populations":[{"g":"儿童","t":"不适用（儿童无痛经）。"},{"g":"老人","t":"不适用。"},{"g":"孕妇/产妇","t":"孕期禁用腹部热敷；产后恶露期遵医嘱。"},{"g":"慢病(糖尿病)","t":"糖尿病感觉迟钝，严格控制温度防烫伤。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①隔着衣物、控温防烫伤；②红糖水/宫寒贴对真正痛经效果有限，别硬扛；③止痛药可用但胃病患者遵医嘱。","doctor":"剧痛不能站立、冒冷汗晕厥、伴发热呕吐、经血异常或逐月加重，立即妇科就诊。","id":36},
+  {"cat":"痛症","emoji":"🍵","name":"经期姜枣茶","reli":"中","sym":"经期畏寒、小腹冷痛、手脚冰凉的虚寒型痛经","mat":"生姜3片、红枣5颗、红糖少许","method":"生姜红枣加水煮10分钟，加少量红糖，经前1周开始每日1杯至经期结束，痛时也可喝。","usage":"温饮每日1–2杯，经前预防+经期调理；胃灼热者减量。","course":"经前1周至经期每日饮用，连续3个月经周期观察改善。","folk":"姜温中散寒、红枣补气血，适合\"寒凝血瘀\"型，热性体质（舌红苔黄）不宜。","populations":[{"g":"儿童","t":"不适用。"},{"g":"老人","t":"血糖高者少糖。"},{"g":"孕妇/产妇","t":"孕期慎用大量姜；产后可适量温补。"},{"g":"慢病(糖尿病)","t":"去糖或代糖，控量。"},{"g":"过敏体质","t":"罕见姜枣过敏，注意即可。"}],"caution":"①热性体质、经量过多者不宜；②只作辅助，不能替代就医；③孕早期慎姜。","doctor":"痛经进行性加重、非经期也痛、伴包块，需排查子宫内膜异位症等。","id":37},
+  {"cat":"痛症","emoji":"🦷","name":"牙痛盐水漱口+冷敷","reli":"中","sym":"牙龈肿痛、蛀牙遇冷热痛、轻度牙周炎","mat":"温盐水（半杯温水+半茶匙盐）、冰袋","method":"温盐水反复漱口清洁消炎，面部肿痛处冷敷15分钟；刷净患处附近。","usage":"盐水含漱每日3–4次；冷敷每次15分钟，间隔进行。","course":"临时缓解，1–2天无效应尽快看牙医。","folk":"盐水抑菌、冷敷消肿，能救急但不能治本，牙病根在牙齿本身。","populations":[{"g":"儿童","t":"儿童牙痛多需看牙医，盐水漱口仅辅助。"},{"g":"老人","t":"常伴牙周病、慢病，及时口腔科。"},{"g":"孕妇/产妇","t":"孕期牙病风险高，尽早牙科就诊（可安全处理）。"},{"g":"慢病(糖尿病/心脏病)","t":"口腔感染可诱发全身问题，尽早就医。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①花椒/丁香塞牙缝等民间法效果有限且可能刺激；②牙痛不会自愈，拖延更贵更痛。","doctor":"面部肿胀、张口困难、发热、牙龈溢脓，立即口腔科/急诊。","id":38},
+  {"cat":"痛症","emoji":"🤕","name":"头痛穴位+热敷","reli":"中","sym":"紧张性头痛、受凉或疲劳所致头部胀痛","mat":"热毛巾","method":"热毛巾敷颈后/太阳穴15分钟；按揉太阳穴、风池穴（后颈发际凹陷处）各1–2分钟；安静休息。","usage":"发作时热敷+轻柔按压，每日可重复。","course":"对症缓解，反复发作需查因。","folk":"多数日常头痛与紧张、疲劳、受凉相关，放松+热敷能舒缓，但\"雷击样/最重头痛\"要警惕。","populations":[{"g":"儿童","t":"儿童头痛警惕脑炎 etc，持续者就医。"},{"g":"老人","t":"突发剧烈头痛警惕脑血管问题，立即就医。"},{"g":"孕妇/产妇","t":"优先非药物，必要时咨询医生。"},{"g":"慢病(高血压)","t":"高血压头痛需控压，剧烈者急诊。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①按揉力度适中，不暴力扳颈；②长期服止痛药反致药物性头痛。","doctor":"突发炸裂样剧痛、伴呕吐视物模糊肢体无力、发热颈硬，立即急诊（警惕脑出血/脑膜炎）。","id":39},
+  {"cat":"痛症","emoji":"💆","name":"肩颈酸痛拉伸","reli":"中","sym":"久坐、低头族导致的颈肩僵硬酸痛","mat":"无（徒手）","method":"做\"米字操\"缓慢活动颈肩；猫牛式伸展、扩胸运动；每坐1小时起身活动，热敷颈肩15分钟。","usage":"每日数次，每次5–10分钟；工作间隙必做。","course":"日常保养，酸痛1–3天缓解；持续者理疗。","folk":"颈肩痛多因姿势+劳损，动起来比一直挺着好，但切忌暴力掰脖子。","populations":[{"g":"儿童","t":"注意书包重量与坐姿，及时活动。"},{"g":"老人","t":"骨质疏松者动作轻柔，避免摔倒。"},{"g":"孕妇/产妇","t":"可做温和伸展。"},{"g":"慢病(高血压/颈椎病史)","t":"不随意做大幅旋转，遵医嘱。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①不找人暴力扳颈、不盲目推拿；②手麻、头晕、踩棉花感应就医。","doctor":"颈肩痛伴上肢放射痛、麻木无力、大小便障碍，立即脊柱外科就诊。","id":40},
+  {"cat":"痛症","emoji":"🦴","name":"腰背酸痛热敷休息","reli":"中","sym":"久坐、劳累、受凉引起的腰部酸胀疼痛","mat":"热毛巾/暖宝宝","method":"平卧硬板床休息，热敷腰部15–20分钟，轻柔按摩；避免提重物、久坐。","usage":"热敷每日2–3次，急性期多休息少动。","course":"轻度1–3天缓解；超过1周或反复看骨科/康复科。","folk":"多数腰酸痛是肌肉劳损，休息+热敷有效；但\"腿麻、失禁\"是腰椎间盘突出信号。","populations":[{"g":"儿童","t":"儿童腰痛少见，持续者排查。"},{"g":"老人","t":"警惕骨质疏松压缩骨折，跌倒后剧痛立即就医。"},{"g":"孕妇/产妇","t":"孕期腰疼以托腹带+温和活动为主，勿热敷腹部。"},{"g":"慢病(骨质疏松/肾病)","t":"排查原发病。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①不盲目按摩、不暴力扭转；②急性期宜静养。","doctor":"腰痛伴下肢放射痛麻木、大小便失禁、发热，立即急诊（警惕马尾综合征）。","id":41},
+  {"cat":"痛症","emoji":"😣","name":"落枕舒缓","reli":"中","sym":"晨起颈部僵硬、转头受限、单侧疼痛","mat":"热毛巾","method":"热敷颈部15分钟放松肌肉，缓慢做小幅转头活动，不强行扭；疼痛明显可外用止痛膏。","usage":"热敷每日2–3次，配合轻柔活动。","course":"多数2–3天自愈；反复发作者注意枕头高度。","folk":"落枕多因睡姿/枕头不当，热敷放松即可，老人切忌让人旋转扳颈，有风险。","populations":[{"g":"儿童","t":"少见，注意枕头。"},{"g":"老人","t":"禁止暴力旋转颈椎手法，有生命危险风险。"},{"g":"孕妇/产妇","t":"温和热敷即可。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"外用膏药先试敏。"}],"caution":"①不让人暴力扭脖子；②疼痛剧烈、伴手麻头晕就医。","doctor":"落枕伴肢体麻木、头晕、行走不稳，排查颈椎问题。","id":42},
+  {"cat":"痛症","emoji":"✋","name":"手腕疲劳（鼠标手）休息","reli":"中","sym":"长时间用鼠标/手机导致手腕酸痛、僵硬","mat":"无","method":"每用30分钟休息，做手腕伸展（背伸、掌屈、握拳张开）；热敷手腕；调整桌椅高度。","usage":"每小时休息拉伸5分钟；症状时热敷。","course":"保养为主，1–2周缓解；麻木无力看骨科。","folk":"预防胜于治疗，正确姿势+定时休息比任何膏药都管用。","populations":[{"g":"儿童","t":"控制电子产品使用时间。"},{"g":"老人","t":"同成人。"},{"g":"孕妇/产妇","t":"可做温和活动。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①麻木、握力下降、夜间痛醒提示腕管综合征，就医；②不盲目用力掰。","doctor":"手指持续麻木、肌肉萎缩、握物无力，看骨科/神经科。","id":43},
+
+  /* —— 五官 —— */
+  {"cat":"五官","emoji":"👄","name":"口腔溃疡护理","reli":"中","sym":"口腔黏膜小溃疡、灼痛、影响吃喝说话","mat":"淡盐水、维生素B2/C、西瓜霜/冰硼散（药店）","method":"饭后淡盐水漱口保持清洁；局部涂西瓜霜/冰硼散，或含服维生素B2；疼痛重可遵医嘱用溃疡贴。","usage":"淡盐水每日漱口3–4次；药物按说明局部用；忌辛辣烫食。","course":"多数7–10天自愈；反复发作者调理体质。","folk":"多数溃疡无特定原因、会自愈，盲目补维C不一定有用，清洁+局部收敛才是重点。","populations":[{"g":"儿童","t":"儿童溃疡注意是否手足口病，持续不愈看儿科/口腔科。"},{"g":"老人","t":"缺牙/假牙摩擦也可致溃疡，调改义齿。"},{"g":"孕妇/产妇","t":"优先淡盐水清洁，用药前问医生。"},{"g":"慢病(糖尿病/免疫低下)","t":"愈合慢、易感染，及时就医。"},{"g":"过敏体质","t":"外用散剂先小面积试。"}],"caution":"①不挑破、不撒盐；②长期不愈（超2周）、边缘硬、无痛性溃疡警惕癌变，必须活检。","doctor":"溃疡超2周不愈、质地硬、伴颈部肿块，立即口腔科就诊排查。","id":44},
+  {"cat":"五官","emoji":"👀","name":"眼疲劳缓解","reli":"高","sym":"用眼过度致眼干、酸胀、视物模糊","mat":"人工泪液（药店）、温热敷眼","method":"每用眼20分钟看6米外20秒（20-20-20）；闭眼休息、眨眼；干眼用人工泪液（每日≤4–6次），温热敷眼。","usage":"人工泪液按说明滴，不长期依赖；热敷每日1–2次。","course":"休息后数小时缓解；持续干眼看眼科。","folk":"眼疲劳是\"用出来的\"，休息+眨眼比乱滴眼药水强，长期用网红眼药水反加重。","populations":[{"g":"儿童","t":"控制屏幕时间，视力下降查屈光。"},{"g":"老人","t":"老花+干眼常见，眼科配镜。"},{"g":"孕妇/产妇","t":"优先休息热敷，用药问医生。"},{"g":"慢病(糖尿病/高血压)","t":"糖尿病视网膜病变需定期眼科。"},{"g":"过敏体质","t":"选无防腐剂人工泪液。"}],"caution":"①不随意用含药眼药水；②眼红痛、视力下降、畏光就医。","doctor":"突发视力下降、眼痛头痛、视物变形，立即眼科急诊。","id":45},
+  {"cat":"五官","emoji":"👃","name":"鼻塞通鼻（生理盐水）","reli":"中","sym":"感冒/过敏/酒后鼻塞、鼻黏膜充血","mat":"生理盐水喷鼻/洗鼻器、热毛巾","method":"生理盐水洗鼻或喷鼻清理分泌物；热毛巾敷鼻根；按揉鼻翼两侧迎香穴；室内加湿。","usage":"洗鼻每日1–2次；热敷每次5–10分钟。","course":"感冒鼻塞随病程缓解；过敏鼻塞需控过敏原。","folk":"生理盐水冲洗是最安全有效通鼻法，用力擤鼻涕反而把鼻涕推进中耳引发中耳炎。","populations":[{"g":"婴幼儿","t":"婴儿鼻塞用生理盐水滴鼻+吸鼻器，不随意用药。"},{"g":"老人","t":"同成人。"},{"g":"孕妇/产妇","t":"生理盐水安全，用药问医生。"},{"g":"慢病(高血压)","t":"某些通鼻药升血压，慎用，优先物理法。"},{"g":"过敏体质","t":"过敏性鼻炎需避开过敏原+规范用药。"}],"caution":"①不两侧同时用力擤；②通鼻药水不宜长期用（反跳性鼻塞）；③不滴香油等偏方。","doctor":"鼻塞伴脓性涕、面部胀痛、发热（鼻窦炎），或长期单侧鼻塞带血，就诊耳鼻喉科。","id":46},
+  {"cat":"五官","emoji":"😴","name":"打鼾（鼾症）生活调理","reli":"中","sym":"睡眠打鼾、呼吸音重，轻中度无呼吸暂停","mat":"无（生活方式）","method":"侧卧睡眠、枕头适度抬高；减重、戒烟酒、规律作息；睡前清理鼻腔。严重者做睡眠监测。","usage":"每晚侧卧+控制体重，长期坚持。","course":" lifestyle 调理需数周见效；打鼾伴憋气必须就医。","folk":"打鼾多因气道狭窄，侧卧+减重能减轻；但\"睡着憋气\"是睡眠呼吸暂停，有心脑血管风险。","populations":[{"g":"儿童","t":"儿童打鼾警惕腺样体肥大，影响发育，看耳鼻喉科。"},{"g":"老人","t":"排查睡眠呼吸暂停，防意外。"},{"g":"孕妇/产妇","t":"孕期打鼾留意血压血糖。"},{"g":"慢病(高血压/肥胖)","t":"睡眠呼吸暂停与高血压互为因果，务必就医。"},{"g":"过敏体质","t":"过敏性鼻炎致打鼾需控敏。"}],"caution":"①单纯 lifestyle 调理对重度无效；②伴侣反映\"憋气/暂停\"必须就医。","doctor":"睡眠中呼吸暂停、白天嗜睡、血压升高、心梗卒中风险者，尽快睡眠中心就诊。","id":47},
+  {"cat":"五官","emoji":"🦷","name":"口臭清洁调理","reli":"中","sym":"口腔异味，非疾病性（食物/口腔卫生/舌苔）","mat":"牙刷、牙线、刮舌器、漱口水","method":"正确刷牙+刷舌苔+每日牙线，一年洗牙一次；饭后漱口；治牙病、控胃病等原发病。","usage":"每日早晚刷牙、刷舌，牙线每日一次。","course":"口腔卫生改善2–3天见效；顽固口臭查因。","folk":"多数口臭源于口腔（舌苔、牙菌斑），刷舌苔比喝花椒水靠谱得多；胃肠病也可致口臭。","populations":[{"g":"儿童","t":"监督刷牙、处理龋齿。"},{"g":"老人","t":"假牙清洁、口干者多饮水。"},{"g":"孕妇/产妇","t":"激素变化易牙龈炎，加强口腔护理。"},{"g":"慢病(糖尿病/胃病)","t":"糖尿病/胃病可致口臭，控原发病。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①喝花椒水/姜水除口臭无效；②顽固口臭排查牙周病、鼻窦炎、消化病。","doctor":"口臭伴牙龈出血化脓、胃痛、长期不愈，就诊口腔科/消化内科。","id":48},
+  {"cat":"五官","emoji":"🗣️","name":"声音嘶哑养护","reli":"中","sym":"用嗓过度/感冒引起的声嘶、咽干","mat":"温水、胖大海（可选）","method":"少说话、轻声说话，温水润喉；可泡胖大海（短期）；蒸汽吸入润喉；戒烟酒辛辣。","usage":"温水少量多次；胖大海短期代茶（不超过3–5天）。","course":"休息后3–5天缓解；持续声嘶需喉镜。","folk":"声嘶是声带疲劳/炎症，休息最关键，胖大海偏凉，脾胃虚寒者不宜久服。","populations":[{"g":"儿童","t":"儿童声嘶警惕喉炎，伴犬吠样咳/呼吸困难急诊。"},{"g":"老人","t":"长期声嘶警惕喉部病变，早查。"},{"g":"孕妇/产妇","t":"胖大海慎用，优先休息。"},{"g":"慢病(胃食管反流)","t":"反流性喉炎需治胃病。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①胖大海不宜长期喝；②不硬撑着喊；③吸烟者长期声嘶务必排查。","doctor":"声嘶超2周、伴吞咽困难、咳血、呼吸困难，喉科就诊。","id":49},
+  {"cat":"五官","emoji":"👂","name":"耳鸣应对（先就医）","reli":"低","sym":"耳内鸣响、嗡嗡声，持续或间歇性","mat":"无（以就医为主）","method":"首先耳鼻喉科查明原因（耳鸣多为耳病/噪声/血压/药物所致）；避免噪声、规律作息、减压；勿信\"偏方根治\"。","usage":"以医学诊治为主，生活上调养；不自行灌药。","course":"取决于病因，需医生制定方案；急性耳鸣尽早治。","folk":"耳鸣病因复杂，民间\"补肾方/塞药\"多无据，盲目自治易延误听神经病变等真正问题。","populations":[{"g":"儿童","t":"儿童耳鸣少见，排查中耳炎等，及时就医。"},{"g":"老人","t":"老年性耳聋伴耳鸣常见，听力评估+助听。"},{"g":"孕妇/产妇","t":"先就医，避免自行用药。"},{"g":"慢病(高血压/糖尿病)","t":"控制慢病，部分耳鸣与之相关。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①不塞葱汁、不滴不明液体入耳；②突发耳鸣伴听力下降抓紧治。","doctor":"突发耳鸣伴听力骤降、眩晕、面瘫，立即耳鼻喉科急诊。","id":50},
+
+  /* —— 肠胃 —— */
+  {"cat":"肠胃","emoji":"🐉","name":"火龙果通便","reli":"中","sym":"轻度功能性便秘、大便干结","mat":"红心/白心火龙果半个至1个","method":"每日吃半个至1个火龙果，配合多饮水；红心含甜菜红素（排便呈红色属正常）。","usage":"作水果每日食用，餐间吃；配合喝水运动。","course":"1–2天见效；长期便秘需调饮食作息。","folk":"火龙果膳食纤维+籽促蠕动，是温和的通便水果，比猛吃泻药安全。","populations":[{"g":"婴幼儿","t":"辅食期少量尝试，观察消化。"},{"g":"老人","t":"牙口不便可打泥，控糖者适量。"},{"g":"孕妇/产妇","t":"孕期便秘可用，安全。"},{"g":"慢病(糖尿病)","t":"含糖，控量并算入总糖。"},{"g":"过敏体质","t":"罕见，首次少量。"}],"caution":"①腹泻者不宜；②红心火龙果致红尿红便非出血；③便秘超3天/便血就医。","doctor":"便秘伴腹痛呕吐、便血、体重下降，排查肠梗阻等。","id":51},
+  {"cat":"肠胃","emoji":"🥛","name":"酸奶/益生菌调理","reli":"中","sym":"消化不良、腹泻便秘交替、肠道菌群紊乱","mat":"无糖低脂酸奶或益生菌制剂","method":"每日适量无糖酸奶（常温放置半小时再吃减刺激），或遵医嘱用益生菌；搭配高纤维饮食。","usage":"每日1–2杯酸奶或按说明服益生菌；不与抗生素同服。","course":"调理2–4周观察；腹泻便秘持续就医。","folk":"活性乳酸菌帮平衡肠道菌群，对抗生素后腹泻、消化不良有益，但非\"包治百病\"。","populations":[{"g":"婴幼儿","t":"1岁内选婴幼儿专用益生菌，咨询医生。"},{"g":"老人","t":"可选低糖酸奶，乳糖不耐选无乳糖。"},{"g":"孕妇/产妇","t":"可用，选正规产品。"},{"g":"慢病(糖尿病)","t":"选无糖款。"},{"g":"过敏体质","t":"牛奶蛋白过敏者选非乳基益生菌。"}],"caution":"①空腹少喝冷酸奶；②益生菌不与抗生素同服（间隔2小时）；③免疫低下者用益生菌先问医生。","doctor":"腹泻伴发热血便、持续腹胀、体重下降，就诊消化内科。","id":52},
+  {"cat":"肠胃","emoji":"🔴","name":"山楂泡水（消食）","reli":"中","sym":"肉食积滞、饭后饱胀、食欲不振","mat":"干山楂3–5片（或鲜山楂）、陈皮","method":"山楂片加陈皮沸水冲泡，餐后饮用助消化。","usage":"餐后温饮，每日1–2次；胃酸多者少喝。","course":"积食1–2天缓解；长期胃不适就医。","folk":"山楂有机酸促胃液分泌、消肉食积，是经典\"解腻\"食材，但胃酸多者反伤胃。","populations":[{"g":"儿童","t":"儿童积食可用，量减半，配合饮食清淡。"},{"g":"老人","t":"胃黏膜薄，少量，勿空腹。"},{"g":"孕妇/产妇","t":"孕早期慎大量山楂（有宫缩风险），少量调味可。"},{"g":"慢病(胃病/糖尿病)","t":"胃溃疡/反酸者忌；糖尿病控量。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①胃溃疡、反酸、空腹不宜；②孕妇不宜大量；③不能替代正规消化治疗。","doctor":"反复胃痛、黑便、呕吐，排查溃疡出血，及时就诊。","id":53},
+  {"cat":"肠胃","emoji":"🍎","name":"熟苹果止泻","reli":"中","sym":"轻微腹泻、消化不良性溏便","mat":"苹果1个","method":"苹果带皮煮软（或蒸熟）吃，果胶煮熟后具收敛止泻作用；腹泻期饮食清淡。","usage":"熟苹果作加餐，每日1–2个；配合清淡米粥。","course":"1–2天好转；持续腹泻就医。","folk":"生苹果通便、熟苹果止泻——果胶加热后作用相反，是民间实用的\"双向\"食材。","populations":[{"g":"婴幼儿","t":"婴幼儿腹泻可刮熟苹果泥，但脱水需口服补液盐+就医。"},{"g":"老人","t":"易消化，适合腹泻期。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①仅用于轻度；②腹泻脱水（尿少、口干、精神差）必须补液盐+就医；③带血/高热就医。","doctor":"腹泻伴高热、血便、严重脱水、持续超2天，立即就诊。","id":54},
+  {"cat":"肠胃","emoji":"🍵","name":"姜枣茶（胃寒）","reli":"中","sym":"胃寒隐痛、喜暖喜按、受凉或吃冷食后不适","mat":"生姜3片、红枣5颗","method":"姜枣加水煮10分钟温饮，餐前或受凉后喝。","usage":"温饮每日1–2次，胃寒时喝；反酸者不加糖。","course":"调理1–2周；反复胃痛查因。","folk":"姜温胃散寒、红枣补脾，适合\"吃凉就痛\"的虚寒胃，但胃热反酸者越喝越糟。","populations":[{"g":"儿童","t":"少量，防刺激。"},{"g":"老人","t":"糖尿病人少糖。"},{"g":"孕妇/产妇","t":"孕早期慎大量姜。"},{"g":"慢病(糖尿病/胃病)","t":"去糖；胃溃疡反酸者不宜。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①胃热（口臭、反酸、舌红）不宜；②只调虚寒，不治病根；③持续痛就医。","doctor":"上腹痛规律改变、黑便、消瘦、呕吐，消化内科就诊排查。","id":55},
+  {"cat":"肠胃","emoji":"🤲","name":"腹部顺时针按摩","reli":"高","sym":"腹胀、便秘、食滞引起的腹部不适","mat":"无（徒手）","method":"以肚脐为中心顺时针画圈轻按，每次5–10分钟，每日2–3次；可配合温热敷。","usage":"餐后1小时或不适时按摩，力度轻柔。","course":"按需使用，腹胀当日缓解；便秘需配合饮食运动。","folk":"顺时针顺应结肠走向促排便，是零成本促蠕动法，但肠梗阻时绝对禁止按摩。","populations":[{"g":"婴幼儿","t":"婴儿肠胀气可做\"蹬自行车\"腿操+顺时针揉腹，轻柔。"},{"g":"老人","t":"力度要轻，避免腹部用力。"},{"g":"孕妇/产妇","t":"孕中晚期轻柔，避免按压宫底。"},{"g":"慢病(腹部手术史)","t":"术后粘连者慎按摩，遵医嘱。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①刚吃完饭、肠梗阻、急腹症（板状腹、剧痛）禁按摩；②按摩后剧痛就医。","doctor":"腹痛剧烈拒按、伴呕吐腹胀便秘（疑似肠梗阻）、发热，立即急诊。","id":56},
+
+  /* —— 解酒 —— */
+  {"cat":"解酒","emoji":"💧","name":"醒酒补水（温开水）","reli":"高","sym":"醉酒后头痛、口干、乏力、恶心","mat":"温开水/淡盐水","method":"分次慢饮温开水或淡盐水（每次100–200ml，间隔15–20分钟），侧卧休息防误吸，头部稍垫高。","usage":"醉后即时开始补水，少量多次；不一次猛灌。","course":"休息6–8小时酒精代谢下降；次日仍不适继续补水。","folk":"酒精利尿致脱水，补水是最实在的\"解酒\"——蜂蜜水、淡盐水都行，浓茶咖啡反加重脱水。","populations":[{"g":"儿童","t":"儿童禁酒，无此场景。"},{"g":"老人","t":"老人代谢慢、易跌倒，醉后专人看护。"},{"g":"孕妇/产妇","t":"孕期禁酒。"},{"g":"慢病(肝病/糖尿病/胃病)","t":"肝病患者禁酒，醉后务必就医。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①不强催吐（伤食管误吸）；②不饮浓茶咖啡；③意识模糊即急救。","doctor":"意识模糊、呼吸慢、皮肤湿冷、呕吐误吸，立即拨打120。","id":57},
+  {"cat":"解酒","emoji":"👃","name":"酒后鼻塞缓解","reli":"中","sym":"饮酒后鼻腔充血、通气不畅","mat":"热毛巾、蜂蜜水","method":"温热敷鼻根5–10分钟；按揉迎香穴；饮蜂蜜水；半卧位垫高枕头睡。","usage":"睡前热敷+蜂蜜水，睡觉时抬高枕头。","course":"酒精代谢后缓解，数小时内好转。","folk":"酒精扩张血管致鼻黏膜充血，热敷+蜂蜜水舒缓，持续超12小时警惕鼻窦炎。","populations":[{"g":"儿童","t":"不适用。"},{"g":"老人","t":"注意血压，酒后监测。"},{"g":"孕妇/产妇","t":"孕期禁酒。"},{"g":"慢病(高血压/鼻炎)","t":"高血压者酒后鼻塞慎用通鼻药，物理法为主。"},{"g":"过敏体质","t":"酒精性鼻炎需控酒。"}],"caution":"①持续性鼻塞伴脓涕面痛就医；②不滴不明液体。","doctor":"酒后鼻塞超12小时伴脓性涕、面部胀痛发热，就诊耳鼻喉科。","id":58},
+
+  /* —— 便民 —— */
+  {"cat":"便民","emoji":"🧊","name":"冰箱去异味","reli":"高","sym":"冰箱内食物串味、异味重","mat":"小苏打/柠檬/咖啡渣/活性炭","method":"敞口小苏打盒放冷藏室吸附；柠檬切片或晒干的咖啡渣放角落；定期清理过期食物、擦洗内壁。","usage":"小苏打每月更换；柠檬/咖啡渣每周换。","course":"持续放置，异味数日内减轻。","folk":"小苏打与活性炭是物理吸附高手，比喷香精掩盖更彻底，且无化学残留。","populations":[{"g":"婴幼儿","t":"食材卫生关系宝宝，勤清理。"},{"g":"老人","t":"同用。"},{"g":"孕妇/产妇","t":"安全物理法，放心用。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"咖啡渣过敏者慎用。"}],"caution":"①根本是清理变质食物，不止于除味；②霉变食物及时丢弃。","doctor":"非医疗，无需就医。","id":59},
+  {"cat":"便民","emoji":"👕","name":"衣物异味祛除法","reli":"高","sym":"衣服霉味、汗味、油烟味","mat":"通风、白醋/小苏打、阳光","method":"及时晾晒通风；机洗加半杯白醋或一小勺小苏打去味；顽固异味太阳暴晒杀菌。","usage":"洗衣时添加，或浸泡后清洗；定期暴晒。","course":"一次清洗即可明显去味。","folk":"异味多来自细菌和残留，白醋杀菌、暴晒最天然，比香味柔顺剂治本。","populations":[{"g":"婴幼儿","t":"婴儿衣物用专用洗剂+暴晒，白醋需漂净。"},{"g":"老人","t":"同用。"},{"g":"孕妇/产妇","t":"优先通风暴晒，少化学剂。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"新洗衣液先小面积试，防过敏。"}],"caution":"①霉斑严重衣物考虑丢弃；②白醋勿与漂白剂混用。","doctor":"非医疗，无需就医。","id":60},
+  {"cat":"便民","emoji":"🪞","name":"镜面防雾（肥皂水）","reli":"高","sym":"浴室镜、眼镜、泳镜起雾","mat":"肥皂/洗洁精、干布","method":"镜面涂薄层肥皂再擦干，形成防雾膜；眼镜/泳镜内侧滴少许洗洁精擦匀。","usage":"洗澡前或戴前处理，效果可持续数次。","course":"一次处理维持数天。","folk":"肥皂膜降低表面张力，水珠摊平不凝雾，比买防雾喷更省。","populations":[{"g":"婴幼儿","t":"防误食肥皂，处理后擦净。"},{"g":"老人","t":"同用。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"选低敏皂，避免入眼。"}],"caution":"①勿入眼；②泳镜内侧处理勿伤眼。","doctor":"非医疗，无需就医。","id":61},
+  {"cat":"便民","emoji":"👟","name":"白鞋/瓷砖去黄","reli":"高","sym":"白鞋边、瓷砖接缝发黄发黑","mat":"牙膏+小苏打、旧牙刷","method":"牙膏挤在发黄处，撒少量小苏打，旧牙刷刷洗，湿布擦净；瓷砖缝同法。","usage":"脏了就刷，局部处理。","course":"一次刷洗明显变白。","folk":"牙膏含研磨剂+小苏打弱碱，去黄去污不伤表面，比强漂剂温和。","populations":[{"g":"婴幼儿","t":"处理后清水冲净，防残留。"},{"g":"老人","t":"同用。"},{"g":"孕妇/产妇","t":"可用，通风处操作。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"戴手套防刺激。"}],"caution":"①彩色鞋慎用，先小面积试；②不混漂白剂。","doctor":"非医疗，无需就医。","id":62},
+  {"cat":"便民","emoji":"🍳","name":"重油污清洁（小苏打+白醋）","reli":"高","sym":"油烟机、锅底、灶台厚重油污","mat":"小苏打、白醋、热水、喷壶","method":"小苏打调糊敷油污处静置10分钟，喷白醋起泡后擦洗；锅底可煮小苏打水。","usage":"油污重处敷糊+喷醋，擦洗后冲净。","course":"一次处理洁净；定期保养。","folk":"小苏打碱性的去油+白醋酸化松动，是天然\"去油搭档\"，比强腐蚀清洁剂安全。","populations":[{"g":"婴幼儿","t":"清洁后冲净，防残留入口。"},{"g":"老人","t":"操作时防滑防烫。"},{"g":"孕妇/产妇","t":"通风操作，少吸气味。"},{"g":"慢病(哮喘)","t":"避免刺激性气味，戴口罩通风。"},{"g":"过敏体质","t":"戴手套口罩。"}],"caution":"①白醋不兑漂白剂（生毒气）；②重油污戴手套。","doctor":"非医疗，无需就医。","id":63},
+  {"cat":"便民","emoji":"🚰","name":"下水道异味疏通","reli":"高","sym":"厨房/卫生间下水道返味","mat":"小苏打、白醋、热水","method":"先倒半杯小苏打入口，再倒半杯白醋，盖住冒泡5分钟，冲沸水；定期维护。","usage":"每月1次预防；异味时即用。","course":"一次处理去味；严重堵塞需物理疏通。","folk":"小苏打+醋产生气泡松动污垢油脂，热水冲净，比直接倒强腐蚀疏通剂温和。","populations":[{"g":"婴幼儿","t":"操作后盖好地漏防坠落。"},{"g":"老人","t":"同用。"},{"g":"孕妇/产妇","t":"通风操作。"},{"g":"慢病(哮喘)","t":"戴口罩通风。"},{"g":"过敏体质","t":"戴手套。"}],"caution":"①不混漂白剂；②完全堵塞需专业疏通，勿硬倒。","doctor":"非医疗，无需就医。","id":64},
+  {"cat":"便民","emoji":"🏷️","name":"标签残胶清除","reli":"高","sym":"商品标签撕后留黏胶","mat":"风油精/酒精/食用油、布","method":"风油精或酒精滴在残胶上浸润1–2分钟，用布擦除；无风油精可用食用油软化后洗洁精洗净。","usage":"局部涂抹浸润后擦拭，再普通清洗。","course":"一次清除。","folk":"有机物（风油精/酒精）溶解不干胶，比硬抠省力还不留痕。","populations":[{"g":"婴幼儿","t":"处理后彻底清洗，防入口。"},{"g":"老人","t":"同用。"},{"g":"孕妇/产妇","t":"风油精气味浓，通风少量用。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"酒精/风油精先小面积试。"}],"caution":"①贵重漆面先小试，酒精可能脱漆；②风油精勿入眼。","doctor":"非医疗，无需就医。","id":65},
+  {"cat":"便民","emoji":"📱","name":"屏幕/眼镜清洁","reli":"高","sym":"手机、平板、眼镜表面污渍指纹","mat":"微纤维布、少量酒精/清水","method":"断电后微纤维布轻擦；顽固污渍蘸少量酒精（眼镜用镜片布+清水），勿直接喷屏幕。","usage":"日常擦拭，每周1–2次。","course":"一次擦净。","folk":"微纤维布吸附灰尘不划伤，酒精消毒但需少量，直接喷易渗进缝隙。","populations":[{"g":"婴幼儿","t":"手机常被宝宝摸，定期消毒。"},{"g":"老人","t":"同用。"},{"g":"孕妇/产妇","t":"可用。"},{"g":"慢病","t":"无特殊。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①不喷液体入接口；②不用药用强力溶剂伤镀膜。","doctor":"非医疗，无需就医。","id":66},
+
+  /* —— 其他 —— */
+  {"cat":"其他","emoji":"🌞","name":"轻度中暑降温","reli":"高","sym":"高温下头晕、口渴、多汗、乏力、恶心（先兆/轻症中暑）","mat":"阴凉处、温水/淡盐水、冷毛巾","method":"立即移至阴凉通风处，松开衣领，冷毛巾敷颈腋股，小口喝淡盐水或电解质水；症状重可扇风降温。","usage":"降温+小口补液，休息至恢复。","course":"处理后30分钟–1小时缓解；重症需送医。","folk":"中暑是体温调节失衡，核心是\"快速降温+补液\"，搬阴凉处比任何药都关键。","populations":[{"g":"婴幼儿","t":"婴幼儿体温调节差，最易中暑，迅速降温就医。"},{"g":"老人","t":"老人反应迟钝，高温天重点看护。"},{"g":"孕妇/产妇","t":"孕期怕热，速降温并就医评估。"},{"g":"慢病(心血管病)","t":"中暑易诱发心脑血管意外，尽快就医。"},{"g":"过敏体质","t":"无特殊。"}],"caution":"①不猛灌冰水、不喂昏迷者；②高热无汗（热射病）是急症。","doctor":"体温高、意识模糊、无汗、抽搐（热射病），立即拨打120并持续降温。","id":67},
+  {"cat":"其他","emoji":"❄️","name":"冻疮护理","reli":"中","sym":"手脚耳廓遇冷后红肿、瘙痒、遇热刺痛","mat":"温毛巾、润肤霜","method":"回暖后用温毛巾（不烫）湿敷，轻涂润肤霜按摩；注意保暖防冻，不烤火不搔抓。","usage":"每日温敷+润肤，注意保暖。","course":"保暖后1–2周逐渐消退；破溃者防感染。","folk":"冻疮是冷致血管痉挛，温敷慢慢回暖，猛火烤反而加重损伤、辣椒水更刺激伤口。","populations":[{"g":"婴幼儿","t":"末梢循环差，重点保暖手脚。"},{"g":"老人","t":"血液循环慢，严防耳手足冻伤。"},{"g":"孕妇/产妇","t":"注意保暖。"},{"g":"慢病(糖尿病/血管病)","t":"末梢缺血，冻伤风险高，破溃难愈，尽早就医。"},{"g":"过敏体质","t":"润肤霜低敏。"}],"caution":"①不烤火、不搓揉、不涂辣椒水；②破溃感染就医。","doctor":"冻疮破溃化脓、发黑坏死、糖尿病者足部冻伤，及时就诊。","id":68},
+  {"cat":"其他","emoji":"🧳","name":"水土不服调理","reli":"中","sym":"换环境后腹胀、腹泻、食欲不振、睡眠差","mat":"益生菌、清淡饮食、温水","method":"到达后先吃熟悉清淡食物，喝瓶装/烧开的水，补充益生菌，规律作息；少量多餐。","usage":"行程中每日益生菌+清淡饮食，不适时温饮。","course":"适应期2–3天多缓解；持续腹泻就医。","folk":"水土不服多是菌群/饮食/水质变化，益生菌+清淡帮肠道平稳过渡，比乱吃肠胃药稳。","populations":[{"g":"婴幼儿","t":"婴幼儿最易水土不服，带熟悉奶粉、喝开水，腹泻脱水就医。"},{"g":"老人","t":"慢病者带足药，注意饮食卫生。"},{"g":"孕妇/产妇","t":"避免生水生冷，优先熟食。"},{"g":"慢病","t":"带齐日常药，防断药。"},{"g":"过敏体质","t":"避开陌生过敏原食物。"}],"caution":"①不喝生水、不吃不洁摊贩；②严重腹泻脱水就医；③境外注意疫苗。","doctor":"持续腹泻脱水、发热、血便，及时就诊。","id":69},
+  {"id": 70, "cat": "感冒", "emoji": "🌿", "name": "葱豉汤（葱白淡豆豉）", "reli": "中", "sym": "风寒感冒初期：怕冷、无汗、鼻塞流清涕、轻头痛", "mat": "葱白3段、淡豆豉10克", "method": "葱白切段与淡豆豉加水煮10分钟，趁热饮下，盖被微汗。", "usage": "趁热温服，服后盖被微微出汗；每日1–2次。", "course": "风寒初期连服1–2天，汗出热退即停；超3天不愈就医。", "folk": "葱白发汗、淡豆豉解表，是张仲景《伤寒论》流传至今的经典轻症方，风险极低。", "populations": [{"g": "儿童", "t": "减量，3岁以下咨询医生。"}, {"g": "老人", "t": "出汗后保暖防受凉。"}, {"g": "孕妇/产妇", "t": "少量，孕早期咨询医生。"}, {"g": "慢病(高血压/糖尿病/胃病)", "t": "胃病反酸者少量。"}, {"g": "过敏体质", "t": "豆制品过敏慎用豆豉。"}], "caution": "①风热感冒（黄涕咽痛）不宜；②仅限轻症初期；③糖尿病注意淡豆豉含盐。", "doctor": "高烧、咳嗽加重、3天不愈、胸闷，立即就医。"},
+  {"id": 71, "cat": "感冒", "emoji": "🥬", "name": "香菜根生姜水", "reli": "中", "sym": "受凉后怕冷、鼻塞、轻微头痛（风寒轻症）", "mat": "香菜根1小把、生姜2片", "method": "香菜根洗净与姜片加水煮10分钟，温服。", "usage": "温饮，每日1–2次，趁热喝。", "course": "受凉初期1–2天，症状缓解即停。", "folk": "香菜根辛温发散、生姜散寒，民间用于受风初起，安全性高。", "populations": [{"g": "儿童", "t": "减量，气味重小孩可能抗拒。"}, {"g": "老人", "t": "可用，注意保暖。"}, {"g": "孕妇/产妇", "t": "少量，孕早期咨询。"}, {"g": "慢病(胃病)", "t": "胃热反酸者少饮。"}, {"g": "过敏体质", "t": "香菜过敏者禁用。"}], "caution": "①仅辅助轻症；②皮肤病患者（如日光性皮炎）慎大量香菜。", "doctor": "症状加重或发热，及时就诊。"},
+  {"id": 72, "cat": "咳嗽", "emoji": "🧄", "name": "大蒜冰糖水", "reli": "中", "sym": "风寒型轻咳：咳嗽声重、咽痒、白痰、怕冷", "mat": "大蒜2–3瓣、冰糖适量", "method": "大蒜拍碎加冰糖与水炖15分钟，温饮。", "usage": "温饮，每日1–2次。", "course": "轻咳期2–3天，无效就医。", "folk": "大蒜温肺散寒、冰糖润肺，民间用于受凉后寒咳，小孩接受度尚可。", "populations": [{"g": "儿童", "t": "大蒜减半，避免刺激肠胃。"}, {"g": "老人", "t": "胃病者少量。"}, {"g": "孕妇/产妇", "t": "少量，孕早期咨询。"}, {"g": "慢病(胃病)", "t": "胃溃疡/反酸者忌。"}, {"g": "过敏体质", "t": "蒜过敏者禁用。"}], "caution": "①热咳（黄痰咽喉肿痛）不宜；②大蒜刺激，空腹不喝；③1岁内婴儿不宜。", "doctor": "咳嗽超2周、痰中带血、喘憋发热，就医。"},
+  {"id": 73, "cat": "咳嗽", "emoji": "🍊", "name": "盐蒸橙子（盐蒸橘）", "reli": "中", "sym": "热咳、燥咳：咽喉痒、干咳或少量黄痰", "mat": "橙子1个、少许盐", "method": "橙子顶部切开，撒少许盐，筷子戳孔，隔水蒸10–15分钟，连果肉带汁吃。", "usage": "温热吃果肉喝汁，每日1次。", "course": "咳嗽期3–5天，无效就医。", "folk": "橙皮理气、盐润燥，民间常用于感冒后迁延咳嗽，性质温和。", "populations": [{"g": "儿童", "t": "1岁以上可用，注意烫。"}, {"g": "老人", "t": "糖尿病少放盐即可。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "无糖负担，放心。"}, {"g": "痰湿体质", "t": "痰多稀白者不宜久用。"}], "caution": "①不能代替药物治疗；②橙子非橘子，用橙子更佳；③寒咳白痰慎用。", "doctor": "咳嗽迁延不愈、伴喘、发热、血痰，就诊。"},
+  {"id": 74, "cat": "咳嗽", "emoji": "🥕", "name": "白萝卜蜂蜜水", "reli": "中", "sym": "热咳、食积咳嗽：痰黄黏、咽干、伴腹胀", "mat": "白萝卜半根、蜂蜜适量", "method": "白萝卜切丁煮水，晾温后调入蜂蜜饮用。", "usage": "温饮，每日1–2次；1岁内禁蜂蜜。", "course": "咳嗽期3–5天。", "folk": "白萝卜下气化痰、蜂蜜润肺，适合\"吃多了积食化热\"的咳嗽。", "populations": [{"g": "儿童", "t": "1岁以上可用蜂蜜，1岁内禁。"}, {"g": "老人", "t": "糖尿病老人去蜂蜜改冰糖少量。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "去蜂蜜。"}, {"g": "脾胃虚寒", "t": "白萝卜偏凉，腹泻者少用。"}], "caution": "①寒咳白稀痰不宜；②1岁内婴儿禁蜂蜜（肉毒风险）。", "doctor": "持续咳嗽、喘鸣、发热，就医。"},
+  {"id": 75, "cat": "咳嗽", "emoji": "🍊", "name": "金桔冰糖水", "reli": "中", "sym": "咳嗽痰多、咽喉不适、嗓子发紧", "mat": "金桔5–6个、冰糖少许", "method": "金桔洗净切开，加冰糖煮10分钟，连皮同食饮汤。", "usage": "温饮，每日1–2次。", "course": "3–5天。", "folk": "金桔理气化痰、皮中类黄酮丰富，是冬季民间润喉方。", "populations": [{"g": "儿童", "t": "去核防呛，减量。"}, {"g": "老人", "t": "糖尿病少糖。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "去糖。"}, {"g": "胃溃疡", "t": "胃酸多者少量。"}], "caution": "①仅辅助；②血糖高者控糖；③热咳黄痰仍可，寒咳白痰亦可用。", "doctor": "咳嗽加重、发热、呼吸困难，就医。"},
+  {"id": 76, "cat": "咳嗽", "emoji": "🍐", "name": "百合银耳羹", "reli": "低", "sym": "阴虚燥咳：干咳少痰、咽干口燥、夜间咳", "mat": "银耳、百合、冰糖少许", "method": "银耳泡发与百合同炖至黏稠，加少许冰糖，作甜羹。", "usage": "温热食用，可作加餐，每周3–4次。", "course": "调理2–3周。", "folk": "银耳润肺、百合清心，适合秋燥与阴虚体质的长期润养。", "populations": [{"g": "儿童", "t": "少量，防溏便。"}, {"g": "老人", "t": "糖尿病去糖。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "去冰糖。"}, {"g": "痰湿体质", "t": "痰多者不宜。"}], "caution": "①属药膳，需辨证；②外感风寒咳嗽不宜；③糖尿病人去糖。", "doctor": "长期干咳伴体重下降、咯血，就医排查。"},
+  {"id": 77, "cat": "咳嗽", "emoji": "🍐", "name": "花椒蒸梨", "reli": "中", "sym": "寒咳：咳嗽声重、白稀痰、咽痒怕冷", "mat": "雪梨1个、花椒10粒、冰糖少许", "method": "梨去核，放入花椒与冰糖，隔水蒸20分钟，吃梨喝汤。", "usage": "温热食用，每日1次。", "course": "3–5天。", "folk": "花椒温中散寒、梨润肺，寒热搭配用于寒性咳嗽，民间常用。", "populations": [{"g": "儿童", "t": "花椒减量，挑出不吃。"}, {"g": "老人", "t": "糖尿病去糖。"}, {"g": "孕妇/产妇", "t": "少量。"}, {"g": "慢病(糖尿病)", "t": "去糖。"}, {"g": "热咳", "t": "黄痰咽痛者不宜。"}], "caution": "①热咳禁用；②花椒刺激，胃热者少；③仅辅助。", "doctor": "咳嗽迁延、喘憋、发热，就医。"},
+  {"id": 78, "cat": "肠胃", "emoji": "🌾", "name": "炒麦芽谷芽水", "reli": "中", "sym": "米面薯类食积、小儿厌食、饭后饱胀", "mat": "炒麦芽、炒谷芽各10克", "method": "加水煎煮15分钟，温服。", "usage": "温服，饭后饮，每日1–2次。", "course": "积食期2–3天。", "folk": "炒麦芽谷芽善消米面积滞，是中医儿科常用的温和消积法，比山楂更平和。", "populations": [{"g": "儿童", "t": "小儿积食首选，减量。"}, {"g": "老人", "t": "消化弱可用。"}, {"g": "孕妇/产妇", "t": "产后积食可用，少量。"}, {"g": "慢病(糖尿病)", "t": "无糖友好。"}, {"g": "哺乳期", "t": "麦芽有回乳作用，哺乳期大量慎用。"}], "caution": "①哺乳期女性大量麦芽可能回乳；②仅消食不治病根。", "doctor": "反复腹痛、呕吐、消瘦，就诊。"},
+  {"id": 79, "cat": "肠胃", "emoji": "🥣", "name": "芡实莲子粥", "reli": "中", "sym": "脾虚久泻、便溏、吃凉就拉肚子", "mat": "芡实、莲子、大米各适量", "method": "芡实莲子泡软与大米慢熬成粥，可加少许山药。", "usage": "温服，作主食，每日1–2次。", "course": "调理1–2周，急性泻停。", "folk": "芡实莲子健脾止泻固涩，是经典的脾虚调理粥，老少皆宜。", "populations": [{"g": "儿童", "t": "研碎易消化。"}, {"g": "老人", "t": "软烂为宜。"}, {"g": "孕妇/产妇", "t": "可用，产后调脾。"}, {"g": "慢病(糖尿病)", "t": "控制米量。"}, {"g": "便秘者", "t": "收敛性强，便秘时勿用。"}], "caution": "①急性感染性腹泻不宜；②便秘者少用；③调理性质。", "doctor": "持续腹泻脱水、血便，就医。"},
+  {"id": 80, "cat": "肠胃", "emoji": "🍵", "name": "陈皮泡水", "reli": "中", "sym": "脘腹胀满、嗳气、痰多、食欲不振", "mat": "陈皮3–5克", "method": "陈皮温水冲洗后沸水冲泡代茶饮。", "usage": "沸水冲泡代茶，每日1剂。", "course": "日常理气，连饮数日。", "folk": "陈皮理气健脾燥湿化痰，是家庭最易得的消食化痰饮品。", "populations": [{"g": "儿童", "t": "减量。"}, {"g": "老人", "t": "胃热反酸者少用。"}, {"g": "孕妇/产妇", "t": "少量，孕早期咨询。"}, {"g": "慢病(胃病)", "t": "反酸烧心者少用。"}, {"g": "阴虚火旺", "t": "舌红少苔者不宜久饮。"}], "caution": "①胃热反酸、阴虚火旺者少饮；②陈皮偏温燥。", "doctor": "腹胀伴消瘦黑便，就诊排查。"},
+  {"id": 81, "cat": "肠胃", "emoji": "🌶️", "name": "花椒煮水（散寒止泻）", "reli": "中", "sym": "受凉引起的腹痛、腹泻、肠鸣", "mat": "花椒10粒、生姜2片", "method": "花椒姜片煮水10分钟，温饮。", "usage": "温饮，每日1–2次。", "course": "受凉腹泻1–2天。", "folk": "花椒温中散寒、姜暖胃，民间用于\"吃凉了拉肚子\"，症状轻时有效。", "populations": [{"g": "儿童", "t": "减量，花椒刺激。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "孕早期慎花椒，少量。"}, {"g": "慢病(胃病)", "t": "胃溃疡慎用。"}, {"g": "阴虚火旺", "t": "不宜。"}], "caution": "①仅用于寒性腹泻；②感染性腹泻、血便立即就医；③花椒刺激胃。", "doctor": "腹泻伴高热、血便、脱水，立即就医。"},
+  {"id": 82, "cat": "肠胃", "emoji": "💆", "name": "按揉足三里", "reli": "高", "sym": "胃痛、消化不良、腹胀、健脾保健", "mat": "无（徒手）", "method": "膝盖下外侧凹陷（足三里穴）用拇指按揉，酸胀为度，每侧3–5分钟。", "usage": "餐后1小时或不适时按揉，每日1–2次。", "course": "按需保健，症状当日缓解。", "folk": "足三里是中医\"保健要穴\"，现代研究提示可调节胃肠蠕动，安全无副作用。", "populations": [{"g": "儿童", "t": "力度轻柔，可由家长代按。"}, {"g": "老人", "t": "可长期保健。"}, {"g": "孕妇/产妇", "t": "可用，孕早期轻按。"}, {"g": "慢病", "t": "无特殊禁忌。"}, {"g": "术后腹部", "t": "腹部术后遵医嘱。"}], "caution": "①仅为保健辅助；②皮肤破损处不按；③急腹症剧痛不按，就医。", "doctor": "剧烈腹痛拒按、呕吐、便血，立即急诊。"},
+  {"id": 83, "cat": "肠胃", "emoji": "🍎", "name": "苹果醋温水（稀释助消化）", "reli": "中", "sym": "餐前饱胀、轻微反酸、食欲不振", "mat": "苹果醋1茶匙、温水", "method": "苹果醋以10倍以上温水稀释，餐前小口饮。", "usage": "餐前稀释饮，每日1次；不可原液喝。", "course": "调理1–2周。", "folk": "稀释的酸性可刺激胃酸分泌、助消化，但必须充分稀释，原液伤牙伤胃。", "populations": [{"g": "儿童", "t": "不推荐儿童用。"}, {"g": "老人", "t": "胃酸少者可用，稀释。"}, {"g": "孕妇/产妇", "t": "少量稀释。"}, {"g": "慢病(胃病)", "t": "胃溃疡/反流者忌；糖尿病注意总量。"}, {"g": "牙釉质软", "t": "饮后用清水漱口防酸蚀。"}], "caution": "①必须稀释，原液伤牙伤食管；②胃溃疡反流禁用；③不能长期依赖。", "doctor": "胃痛反复、反酸烧心加重，消化内科就诊。"},
+  {"id": 84, "cat": "睡眠", "emoji": "🥛", "name": "温牛奶助眠", "reli": "中", "sym": "入睡困难、睡眠浅、睡前易饿", "mat": "温牛奶1杯", "method": "睡前1小时饮1杯温牛奶。", "usage": "睡前温饮，每周规律。", "course": "日常习惯，连续1–2周观察。", "folk": "牛奶含色氨酸助眠，温热饮品本身有助放松，是低成本助眠法。", "populations": [{"g": "儿童", "t": "可选用儿童奶，防夜尿。"}, {"g": "老人", "t": "乳糖不耐选低乳糖。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "选无糖低脂。"}, {"g": "乳糖不耐", "t": "改用温豆浆或酸奶。"}], "caution": "①乳糖不耐者腹泻；②睡前饮量勿多防起夜；③非安眠药。", "doctor": "长期失眠伴情绪异常，就医。"},
+  {"id": 85, "cat": "睡眠", "emoji": "🌼", "name": "合欢花/薰衣草安神茶", "reli": "低", "sym": "思虑多、情绪低落、眠差多梦", "mat": "合欢花或薰衣草少许", "method": "沸水冲泡代茶饮，睡前1小时温饮。", "usage": "睡前温饮1杯，每周数次。", "course": "调理2–4周。", "folk": "合欢花解郁安神、薰衣草舒缓神经，适合压力大导致的眠差，属轻药膳。", "populations": [{"g": "儿童", "t": "不推荐儿童用药草。"}, {"g": "老人", "t": "少量。"}, {"g": "孕妇/产妇", "t": "孕期慎用薰衣草精油/草药，咨询中医。"}, {"g": "慢病", "t": "长期服请先咨询医生。"}, {"g": "过敏体质", "t": "花粉过敏者注意。"}], "caution": "①属药草，建议中医辨证；②孕期慎用；③不能替代治疗。", "doctor": "失眠严重影响白天功能，就医。"},
+  {"id": 86, "cat": "睡眠", "emoji": "🤲", "name": "按揉神门穴+涌泉穴", "reli": "高", "sym": "心烦、入睡难、睡眠浅", "mat": "无（徒手）", "method": "睡前按揉手腕内侧神门穴、脚底涌泉穴各2–3分钟，配合深呼吸。", "usage": "每晚睡前按揉，持之以恒。", "course": "日常保健，1–2周观察。", "folk": "神门宁心、涌泉引火归元，是中医助眠常用穴位组合，安全无副作用。", "populations": [{"g": "儿童", "t": "家长代按，力度轻。"}, {"g": "老人", "t": "可长期保健。"}, {"g": "孕妇/产妇", "t": "可用，涌泉轻按。"}, {"g": "慢病", "t": "无特殊禁忌。"}, {"g": "足部破损", "t": "涌泉处皮肤破不按。"}], "caution": "①仅辅助；②按压力度适中；③焦虑严重需就医。", "doctor": "严重失眠、情绪低落，心理/精神科就诊。"},
+  {"id": 87, "cat": "睡眠", "emoji": "🌬️", "name": "睡前呼吸放松（4-7-8法）", "reli": "高", "sym": "睡前紧张、思绪多、难以入睡", "mat": "无", "method": "躺平闭眼：用鼻吸气4秒、屏息7秒、缓慢呼气8秒，循环4–8次。", "usage": "每晚睡前做4–8个循环。", "course": "日常练习，1–2周见效。", "folk": "放慢呼呼气激活副交感神经，是循证的行为助眠法，零成本无副作用。", "populations": [{"g": "儿童", "t": "家长引导简化版。"}, {"g": "老人", "t": "屏息时长可缩短。"}, {"g": "孕妇/产妇", "t": "可用，侧卧舒适体位。"}, {"g": "慢病(呼吸病)", "t": "肺病患者缩短屏息，遵医嘱。"}, {"g": "所有人", "t": "不勉强屏息，舒适为宜。"}], "caution": "①屏息以舒适为度，不憋气；②严重呼吸疾病者简化。", "doctor": "长期睡眠障碍伴心慌气短，就医。"},
+  {"id": 88, "cat": "皮肤", "emoji": "🌱", "name": "马齿苋煮水外洗", "reli": "中", "sym": "湿疹、痱子、轻度皮炎、蚊虫叮咬红肿", "mat": "鲜马齿苋一把（或干品）", "method": "马齿苋加水煮15分钟，晾温后外洗或湿敷患处。", "usage": "外洗/湿敷每日1–2次，每次10–15分钟。", "course": "皮肤问题期连用3–5天。", "folk": "马齿苋清热解毒、现代研究有抗炎抑菌作用，民间广泛用于湿疹痱子，外用安全。", "populations": [{"g": "儿童", "t": "婴幼儿湿疹可用，先小面积试。"}, {"g": "老人", "t": "同成人。"}, {"g": "孕妇/产妇", "t": "外用安全。"}, {"g": "慢病(糖尿病)", "t": "皮肤破损防感染，就医。"}, {"g": "过敏体质", "t": "先小面积试用。"}], "caution": "①仅外用不内服；②皮肤破溃感染就医；③对马齿苋过敏者停用。", "doctor": "皮疹化脓、泛发、伴发热，就诊皮肤科。"},
+  {"id": 89, "cat": "皮肤", "emoji": "🌼", "name": "金银花/野菊花煮水外洗", "reli": "中", "sym": "热毒疹、疖肿初期、痱子、轻度毛囊炎", "mat": "金银花、野菊花各10克", "method": "加水煮10分钟，晾温后外洗或湿敷。", "usage": "外洗每日1–2次，每次10分钟。", "course": "红肿期3–5天。", "folk": "金银花草清热毒，是民间\"去火解毒\"外用法，对早期热性皮疹有帮助。", "populations": [{"g": "儿童", "t": "稀释、小面积试。"}, {"g": "老人", "t": "同成人。"}, {"g": "孕妇/产妇", "t": "外用安全。"}, {"g": "慢病(糖尿病)", "t": "皮肤破溃及时就医。"}, {"g": "过敏体质", "t": "菊科过敏者慎用。"}], "caution": "①仅外用；②疖肿已化脓、发热需就医；③虚寒体质不宜长期。", "doctor": "疖肿变大、化脓、发热，及时就诊。"},
+  {"id": 90, "cat": "皮肤", "emoji": "🍵", "name": "绿茶水冷敷", "reli": "中", "sym": "晒后泛红、皮肤痒、轻度肿胀、眼疲劳浮肿", "mat": "绿茶包/绿茶叶", "method": "绿茶冲泡放凉，用茶汤冷敷或拍敷患处；也可冷藏茶包敷眼消肿。", "usage": "冷敷每日2–3次，每次10–15分钟。", "course": "症状期连用2–3天。", "folk": "绿茶含茶多酚抗氧化收敛，冷敷镇静，是低成本的晒后/止痒/消肿法。", "populations": [{"g": "儿童", "t": "茶汤稀释，防误入眼。"}, {"g": "老人", "t": "同成人。"}, {"g": "孕妇/产妇", "t": "外用安全。"}, {"g": "慢病", "t": "无特殊。"}, {"g": "过敏体质", "t": "先小面积试。"}], "caution": "①仅外用、用凉茶；②皮肤破损慎用；③眼周用注意卫生。", "doctor": "晒伤起疱、皮肤感染，就医。"},
+  {"id": 91, "cat": "皮肤", "emoji": "👶", "name": "紫草油/茶油涂红屁股（尿布疹）", "reli": "中", "sym": "婴儿尿布疹、臀部红肿、轻微擦红", "mat": "紫草油或食用茶油/香油", "method": "温水洗净臀部、晾干后薄涂紫草油或茶油，勤换尿布保持干爽。", "usage": "每次换尿布后薄涂，保持干燥。", "course": "2–3天红疹消退。", "folk": "油剂隔离尿液刺激、紫草传统用于护肤，是婴儿红屁股的基础护理。", "populations": [{"g": "婴幼儿", "t": "首选，勤换尿布是关键。"}, {"g": "老人", "t": "同成人护理。"}, {"g": "孕妇/产妇", "t": "产后护理可用。"}, {"g": "慢病", "t": "无特殊。"}, {"g": "过敏体质", "t": "先小面积试用油剂。"}], "caution": "①根本是保持干爽勤换；②破溃渗液、发热就医；③选纯净油剂。", "doctor": "红臀破溃、化脓、伴发热，儿科就诊。"},
+  {"id": 92, "cat": "皮肤", "emoji": "🧂", "name": "粗盐热敷（关节/肩颈）", "reli": "中", "sym": "肩颈僵硬、关节冷痛、老寒腿", "mat": "粗盐、布袋", "method": "粗盐炒热装入布袋，隔毛巾敷于痛处，每次15–20分钟。", "usage": "热敷每日1–2次，温度以不烫为度。", "course": "慢性痛期坚持1–2周。", "folk": "热盐持续温熨，促进局部血液循环、放松肌肉，民间用于寒湿痛。", "populations": [{"g": "儿童", "t": "防烫伤，温度要低。"}, {"g": "老人", "t": "防烫，糖尿病感觉迟钝慎温。"}, {"g": "孕妇/产妇", "t": "腹部禁用，四肢可用。"}, {"g": "慢病(糖尿病/血管病)", "t": "感觉迟钝/循环差，严格控温或咨询医生。"}, {"g": "急性扭伤", "t": "急性期（48小时内）禁热敷。"}], "caution": "①隔毛巾防烫；②急性红肿热痛禁用；③皮肤破损不敷。", "doctor": "关节肿痛伴发热、畸形、活动障碍，就医。"},
+  {"id": 93, "cat": "痛症", "emoji": "✊", "name": "合谷穴按压（止痛要穴）", "reli": "高", "sym": "头痛、牙痛、经痛、面痛的应急缓解", "mat": "无（徒手）", "method": "拇指按压手背虎口合谷穴，向食指方向用力，酸胀为度，每侧3–5分钟。", "usage": "疼痛时按压，可双侧交替。", "course": "对症缓解，反复发作查因。", "folk": "合谷是中医著名\"镇痛穴\"，现代研究证实可抑制痛觉传导，安全有效。", "populations": [{"g": "儿童", "t": "力度轻，可由家长按。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "⚠️ 孕妇禁用合谷（可能催产），改用其他法。"}, {"g": "慢病", "t": "无特殊禁忌。"}, {"g": "所有人", "t": "剧痛不缓解就医。"}], "caution": "①孕妇绝对禁用合谷穴；②仅缓解不治病根；③面部剧痛警惕。", "doctor": "突发炸裂样头痛、牙痛伴面部肿热、经痛晕厥，立即就医。"},
+  {"id": 94, "cat": "痛症", "emoji": "🦶", "name": "花椒水泡脚", "reli": "中", "sym": "手脚冰凉、脚气辅助、冻疮预防、寒湿重", "mat": "花椒20粒、温水", "method": "花椒煮水兑入泡脚水，40℃左右泡15–20分钟。", "usage": "睡前泡脚，每周3–4次。", "course": "坚持2–3周。", "folk": "花椒温通散寒，泡脚促循环，民间用于驱寒、辅助脚气与冻疮预防。", "populations": [{"g": "儿童", "t": "水温略低、时间短。"}, {"g": "老人", "t": "防烫，有人陪。"}, {"g": "孕妇/产妇", "t": "可用，禁高温。"}, {"g": "慢病(糖尿病/血管病)", "t": "感觉迟钝，严格测温或咨询医生。"}, {"g": "下肢静脉血栓", "t": "先咨询医生。"}], "caution": "①脚气需配合抗真菌药，泡脚不根治；②糖尿病控温防烫；③皮肤破损不泡。", "doctor": "脚部破溃感染、糖尿病足，及时就诊。"},
+  {"id": 95, "cat": "痛症", "emoji": "🔥", "name": "粗盐+姜热敷关节", "reli": "中", "sym": "风寒湿关节痛、老寒腿、遇冷加重的酸痛", "mat": "粗盐、生姜片、布袋", "method": "粗盐与姜片炒热装袋，隔毛巾敷关节，每次15–20分钟。", "usage": "热敷每日1次，温而不烫。", "course": "慢性期坚持1–2周。", "folk": "盐储热+姜温经，热敷散寒湿，是民间膝痛腰寒的经典法。", "populations": [{"g": "儿童", "t": "防烫，低温度。"}, {"g": "老人", "t": "骨质疏松者轻柔，防摔。"}, {"g": "孕妇/产妇", "t": "腹部禁用，四肢可用。"}, {"g": "慢病(糖尿病/血管病)", "t": "严格控温，咨询医生。"}, {"g": "急性红肿", "t": "急性期禁用热敷。"}], "caution": "①隔毛巾防烫；②红肿热痛急性期为禁忌；③皮肤破不敷。", "doctor": "关节红热肿痛、变形、活动受限，骨科/风湿科就诊。"},
+  {"id": 96, "cat": "五官", "emoji": "🌼", "name": "菊花枸杞茶", "reli": "中", "sym": "眼干涩、视疲劳、熬夜后目赤", "mat": "白菊花、枸杞各少许", "method": "沸水冲泡代茶饮。", "usage": "温饮，每日1剂，用眼多时喝。", "course": "日常养护，连用1–2周。", "folk": "菊花清肝明目、枸杞养肝肾，是民间护眼经典搭配。", "populations": [{"g": "儿童", "t": "减量，控屏幕更关键。"}, {"g": "老人", "t": "老花干眼可用。"}, {"g": "孕妇/产妇", "t": "少量。"}, {"g": "慢病(糖尿病)", "t": "枸杞含糖，控量。"}, {"g": "脾胃虚寒", "t": "菊花偏凉，腹泻者少饮。"}], "caution": "①脾胃虚寒腹泻者少饮；②眼病需正规眼科；③不能替代就医。", "doctor": "视力下降、眼痛、视物变形，眼科急诊。"},
+  {"id": 97, "cat": "五官", "emoji": "💨", "name": "蒸汽熏鼻（通鼻润鼻）", "reli": "中", "sym": "鼻塞、鼻窦酸胀、干燥性鼻炎", "mat": "热水、大碗、毛巾", "method": "热水倒入碗，低头用毛巾罩住头部，吸入温热蒸汽5–10分钟；或配合生理盐水洗鼻。", "usage": "每日1–2次，蒸汽温润即可。", "course": "鼻塞期连用数日。", "folk": "温热蒸汽湿润鼻腔、稀释分泌物，是安全的物理通鼻法。", "populations": [{"g": "婴幼儿", "t": "防烫伤，距离远、时间短，由成人操作。"}, {"g": "老人", "t": "防烫，坐位进行。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(高血压/哮喘)", "t": "哮喘者慎吸入刺激，温和进行。"}, {"g": "过敏体质", "t": "可对纯净水蒸汽。"}], "caution": "①防烫伤，尤其老人小孩；②不能替代鼻窦炎等治疗；③哮喘慎用。", "doctor": "鼻塞伴脓涕面痛发热、长期单侧带血，耳鼻喉科就诊。"},
+  {"id": 98, "cat": "五官", "emoji": "🦷", "name": "淡盐水漱口（牙龈出血）", "reli": "高", "sym": "牙龈出血、牙龈炎初期、口腔异味", "mat": "温淡盐水", "method": "每日饭后温淡盐水漱口，重点含漱牙龈处。", "usage": "饭后漱口，每日3–4次。", "course": "1–2周，出血不减看牙医。", "folk": "淡盐水清洁抑菌、收敛止血，是牙龈出血最基础的家庭护理。", "populations": [{"g": "儿童", "t": "监护防误吞。"}, {"g": "老人", "t": "高血压用淡盐。"}, {"g": "孕妇/产妇", "t": "孕期牙龈易出血，加强护理。"}, {"g": "慢病(高血压)", "t": "浓度要低。"}, {"g": "所有人", "t": "出血持续需牙科。"}], "caution": "①仅为护理，不治病根；②长期出血警惕血液/牙周病；③盐别太浓。", "doctor": "牙龈持续出血、溢脓、牙齿松动，口腔科就诊。"},
+  {"id": 99, "cat": "便民", "emoji": "🌿", "name": "风油精驱蚊提神", "reli": "中", "sym": "蚊虫叮咬预防、困倦提神、轻微头痛", "mat": "风油精", "method": "外出前涂少量于暴露皮肤驱蚊；困倦时涂太阳穴/人中提神（避开眼口）。", "usage": "按需少量外涂，避开黏膜与破损皮肤。", "course": "即时使用。", "folk": "薄荷脑樟脑清凉驱蚊提神，是国民级便民小物，但属对症外用。", "populations": [{"g": "儿童", "t": "2岁以下慎用樟脑，稀释或避用，远离眼口。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "孕妇慎用樟脑，尤其孕早期。"}, {"g": "慢病", "t": "无特殊。"}, {"g": "过敏体质", "t": "先小面积试，刺激则停。"}], "caution": "①孕妇婴幼儿慎用樟脑；②严禁入眼入口；③仅止痒提神不治病。", "doctor": "蚊虫叮咬后全身皮疹、呼吸困难（过敏），立即急诊。"},
+  {"id": 100, "cat": "便民", "emoji": "🍃", "name": "茶叶渣除湿除味+泡脚", "reli": "中", "sym": "鞋内潮臭、房间湿味、脚部异味", "mat": "晒干的茶叶渣", "method": "干茶渣装袋放鞋柜/衣柜吸湿除味；或煮水泡脚去味。", "usage": "茶渣袋定期更换；泡脚每周数次。", "course": "持续放置/使用。", "folk": "茶叶多孔吸附异味、单宁抑菌，是零成本的去味除湿法。", "populations": [{"g": "婴幼儿", "t": "放高处防误食。"}, {"g": "老人", "t": "同用。"}, {"g": "孕妇/产妇", "t": "安全物理法。"}, {"g": "慢病(哮喘)", "t": "霉变茶渣不用，防霉尘。"}, {"g": "过敏体质", "t": "茶过敏者慎用。"}], "caution": "①茶渣需晒干防霉；②严重脚臭配合治疗。", "doctor": "非医疗，无需就医。"},
+  {"id": 101, "cat": "便民", "emoji": "🍋", "name": "柠檬酸除水垢", "reli": "高", "sym": "水壶、花洒、水龙头水垢", "mat": "柠檬/柠檬酸、水", "method": "柠檬酸兑水煮沸或浸泡水垢处，静置后擦洗冲净。", "usage": "定期除垢，浸泡30分钟再擦。", "course": "一次洁净。", "folk": "水垢是碳酸钙，酸可溶解，柠檬酸比强酸清洁剂安全温和。", "populations": [{"g": "婴幼儿", "t": "处理后冲净防残留。"}, {"g": "老人", "t": "同用。"}, {"g": "孕妇/产妇", "t": "可用，通风。"}, {"g": "慢病(哮喘)", "t": "通风操作。"}, {"g": "过敏体质", "t": "戴手套。"}], "caution": "①勿与漂白剂混用；②金属壶慎用强酸久泡。", "doctor": "非医疗，无需就医。"},
+  {"id": 102, "cat": "便民", "emoji": "💧", "name": "淘米水去油污/浇花", "reli": "中", "sym": "餐具轻油污、地板擦净、花草天然肥", "mat": "淘米水", "method": "头道淘米水静置取上层，擦餐具地板去油；发酵后稀释浇花作肥。", "usage": "日常使用，浇花需稀释发酵。", "course": "一次清洁/定期养护。", "folk": "淘米水含淀粉轻微去油、含养分养花，是勤俭实用的生活法。", "populations": [{"g": "婴幼儿", "t": "餐具最终用清水冲净。"}, {"g": "老人", "t": "同用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病", "t": "无特殊。"}, {"g": "过敏体质", "t": "无特殊。"}], "caution": "①餐具去油后需清水冲净；②浇花要发酵稀释防烧根；③油腻重污另处理。", "doctor": "非医疗，无需就医。"},
+  {"id": 103, "cat": "便民", "emoji": "🦶", "name": "白醋泡脚", "reli": "中", "sym": "脚臭、脚部角质厚、疲劳放松", "mat": "白醋、温水", "method": "白醋少许兑温水泡脚15分钟，软化角质、抑菌除味。", "usage": "每周2–3次，泡后清水冲净。", "course": "坚持2–3周改善。", "folk": "醋酸抑菌、软化角质，是成本低的老法护脚。", "populations": [{"g": "儿童", "t": "稀释、时间短。"}, {"g": "老人", "t": "防烫，糖尿病慎。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病/血管病)", "t": "感觉迟钝控温，咨询医生。"}, {"g": "足部破损", "t": "皮肤破不泡醋。"}], "caution": "①糖尿病/皮肤破损不泡；②泡后冲净防干裂；③浓度勿高。", "doctor": "脚部破溃感染、糖尿病足，就诊。"},
+  {"id": 104, "cat": "便民", "emoji": "🫚", "name": "生姜热敷受寒腹痛", "reli": "中", "sym": "受凉后小腹/胃部隐痛、肠鸣", "mat": "生姜、热水袋", "method": "生姜切片热敷腹部或喝姜枣水，配合热水袋温熨。", "usage": "受寒时热敷，每次15–20分钟。", "course": "当日缓解；反复者查因。", "folk": "生姜温中散寒，热敷放松平滑肌，民间应对\"吃凉了肚子疼\"。", "populations": [{"g": "儿童", "t": "温度低、时间短，由家长操作。"}, {"g": "老人", "t": "防烫。"}, {"g": "孕妇/产妇", "t": "孕期腹部热敷需谨慎，咨询；产后可用。"}, {"g": "慢病(胃病)", "t": "胃热反酸者不宜姜。"}, {"g": "所有人", "t": "剧烈痛、板状腹立即就医。"}], "caution": "①仅寒性腹痛；②急腹症剧痛不热敷，就医；③胃热者不宜。", "doctor": "腹痛剧烈拒按、伴呕吐腹胀（疑似肠梗阻），立即急诊。"},
+  {"id": 105, "cat": "便民", "emoji": "💆", "name": "梳头养生（促循环）", "reli": "中", "sym": "头皮紧、头昏脑涨、头发干枯", "mat": "木梳/牛角梳", "method": "每日早晚从前额向后颈梳头100下，力度适中。", "usage": "每日2次，每次数分钟。", "course": "日常保健，1–2周见放松感。", "folk": "梳头刺激头皮血循环、放松神经，是低成本的头面养生法。", "populations": [{"g": "儿童", "t": "轻柔，防拉扯。"}, {"g": "老人", "t": "可长期保健。"}, {"g": "孕妇/产妇", "t": "可用，缓解疲劳。"}, {"g": "慢病", "t": "无特殊。"}, {"g": "头皮破损", "t": "破损处不梳。"}], "caution": "①力度适中不拉扯；②仅保健；③脱发严重看皮肤科。", "doctor": "头痛伴神经症状、突发脱发斑，就医。"},
+  {"id": 106, "cat": "便民", "emoji": "✋", "name": "按揉内关穴（止呕安神）", "reli": "高", "sym": "晕车恶心、孕吐轻症、心悸紧张", "mat": "无（徒手）", "method": "腕横纹上两横指、两筋之间（内关穴）拇指按揉，酸胀为度，每侧3分钟。", "usage": "恶心/紧张时按揉，可双侧。", "course": "对症缓解，乘车前预防使用。", "folk": "内关是止呕安神要穴，现代研究可调节迷走神经，对晕动、轻孕吐有帮助。", "populations": [{"g": "儿童", "t": "力度轻，乘车前按。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "孕吐轻症可安全按揉（比合谷安全）。"}, {"g": "慢病(心脏病)", "t": "心悸持续需就医，不依赖穴位。"}, {"g": "所有人", "t": "剧烈呕吐脱水就医。"}], "caution": "①仅轻症辅助；②孕吐剧烈/心悸持续就医；③不替代药物。", "doctor": "剧烈呕吐脱水、心悸伴胸痛气短，立即就医。"},
+  {"id": 107, "cat": "便民", "emoji": "🍬", "name": "轻度低血糖急救（立即含糖）", "reli": "高", "sym": "心慌、手抖、出冷汗、头晕（疑似低血糖）", "mat": "糖果/果汁/糖水", "method": "清醒者立即含服糖果或喝糖水/果汁，15分钟无缓解再补一次并就医。", "usage": "发作时立即含糖，静卧休息。", "course": "症状数分钟缓解；反复发作者查因。", "folk": "低血糖需快速补糖，这是救命级的便民常识，糖尿病人尤其要随身带糖。", "populations": [{"g": "儿童", "t": "低血糖儿童随身带糖，家长培训识别。"}, {"g": "老人", "t": "糖尿病人常见，随身糖+急救卡。"}, {"g": "孕妇/产妇", "t": "孕期易低血糖，随身糖。"}, {"g": "慢病(糖尿病)", "t": "必备糖果，监测血糖。"}, {"g": "意识障碍", "t": "昏迷者切勿强行喂食，侧卧打120。"}], "caution": "①昏迷者不可喂食防窒息；②糖尿病患者低血糖纠正后需复测血糖；③反复发作者就医。", "doctor": "昏迷、抽搐、纠正后复发，立即拨打120。"},
+  {"id": 108, "cat": "其他", "emoji": "🌿", "name": "决明子茶（通便清肝）", "reli": "低", "sym": "肠燥便秘、目赤干涩、轻度高血压辅助", "mat": "炒决明子10克", "method": "炒决明子沸水冲泡代茶饮。", "usage": "每日1剂，温饮；不宜久煮。", "course": "便秘期连用3–5天。", "folk": "决明子润肠通便、清肝明目，是民间常用养生茶，但偏药膳需辨证。", "populations": [{"g": "儿童", "t": "不推荐儿童用药草茶。"}, {"g": "老人", "t": "脾虚者减量。"}, {"g": "孕妇/产妇", "t": "孕妇慎用，尤其孕早期。"}, {"g": "慢病(低血压/胃病)", "t": "低血压、胃寒腹泻者不宜。"}, {"g": "过敏体质", "t": "罕见过敏。"}], "caution": "①属药草，需辨证；②长期大量可能致泻、影响营养吸收；③孕妇慎用。", "doctor": "便秘伴腹痛便血、长期依赖，消化内科就诊。"},
+  {"id": 109, "cat": "其他", "emoji": "🌸", "name": "春困提神法", "reli": "中", "sym": "春季乏力嗜睡、精神不振、头脑发沉", "mat": "无/薄荷/冷水", "method": "开窗通风、冷水洗脸、薄荷嗅吸、午后散步10分钟、保证睡眠。", "usage": "日间困倦时组合使用。", "course": "日常调节，数日见效。", "folk": "春困多因作息与缺氧，行为调节比药物更妥，是便民健康常识。", "populations": [{"g": "儿童", "t": "保证睡眠、多户外活动。"}, {"g": "老人", "t": "防跌倒，起身慢。"}, {"g": "孕妇/产妇", "t": "规律作息为主。"}, {"g": "慢病(心血管)", "t": "午后小憩，避免久坐。"}, {"g": "所有人", "t": "长期嗜睡排查睡眠呼吸暂停。"}], "caution": "①长期嗜睡警惕疾病；②不靠咖啡硬撑；③开车困倦即停。", "doctor": "持续嗜睡、伴打鼾憋气、情绪低落，就医。"},
+  {"id": 110, "cat": "其他", "emoji": "🤢", "name": "晕船/晕动调理", "reli": "中", "sym": "乘船、乘车、乘机眩晕恶心", "mat": "姜、橘皮、晕车药（遵医嘱）", "method": "出发前含姜/闻橘皮，坐前排靠窗、闭目养神，重者遵医嘱备晕车药。", "usage": "每次出行前30分钟准备。", "course": "每次出行使用。", "folk": "与晕车同理，姜与芳香镇呕，选前排减晃动，是实用出行法。", "populations": [{"g": "儿童", "t": "姜片减量，备儿童晕车药咨询医师。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "慎用风油精，用姜片；孕吐重者咨询医生。"}, {"g": "慢病", "t": "严重眩晕排查耳石症/心脑血管。"}, {"g": "晕动症重者", "t": "备正规晕车药（遵医嘱）。"}], "caution": "①严重晕动症备药遵医嘱；②频繁发作者排查耳源性疾病。", "doctor": "剧烈呕吐脱水、意识模糊，就医。"},
+
+  {"id": 111, "cat": "肠胃", "emoji": "🤱", "name": "小儿积食·顺时针摩腹", "reli": "高", "sym": "宝宝吃多不消化、腹胀、夜里哭闹、口气酸臭", "mat": "温暖的手掌", "method": "以肚脐为中心，手掌搓热后顺时针轻柔按摩宝宝腹部5–10分钟，每日2–3次；饭后1小时做。", "usage": "饭后1小时，顺时针摩腹5–10分钟，每日2–3次。", "course": "积食期连做2–3天，配合调整喂养。", "folk": "国家中医药管理局发布会推荐的家庭推拿法，能促进排气、缓解腹胀哭闹。", "populations": [{"g": "儿童", "t": "力度如羽毛拂过，宝宝抗拒即停；皮肤红肿停。"}, {"g": "老人", "t": "给孙辈操作同样手法。"}, {"g": "孕妇/产妇", "t": "产妇可给婴儿做。"}, {"g": "所有人", "t": "腹部皮肤破损、剧烈腹痛禁用。"}], "caution": "❌ 刚吃完奶/饭别马上按；❌ 呕吐、发热、血便立即就医。", "doctor": "哭闹伴呕吐、发热、大便带血或腹硬，立即就医排除肠套叠。"},
+  {"id": 112, "cat": "肠胃", "emoji": "🍎", "name": "小儿积食·山楂麦芽水", "reli": "中", "sym": "儿童过节/贪吃后积食、腹胀、食欲差", "mat": "山楂6克（或炒麦芽10克）、清水", "method": "山楂煮水10分钟，少量多次饮；2岁以上适用。", "usage": "温服，少量多次，每日1剂。", "course": "连饮2–3天，积滞化开即停。", "folk": "国家中医药管理局推荐：山楂6克煮水安全化解食积，或白萝卜丝粥理气消食。", "populations": [{"g": "儿童", "t": "2岁以上用；1岁以下只用推拿，不服药。"}, {"g": "老人", "t": "胃酸少者适用。"}, {"g": "孕妇/产妇", "t": "慎用山楂（有流产史禁用）。"}, {"g": "慢病(胃病)", "t": "胃溃疡反酸者忌。"}], "caution": "①1岁以下婴儿不服；②孕妇慎用山楂。", "doctor": "厌食伴发热、腹泻、精神差，就医。"},
+  {"id": 113, "cat": "肠胃", "emoji": "🟡", "name": "小儿积食·鸡内金敷脐", "reli": "中", "sym": "儿童食积、腹胀、眠不安", "mat": "炒鸡内金粉2克、温水或蜂蜜", "method": "粉调成糊，睡前敷于肚脐，保留2–4小时后取下。", "usage": "睡前敷脐2–4小时，每日1次。", "course": "连用2–3晚。", "folk": "国家中医药管理局推荐外治法：炒鸡内金温中行气、消积导滞。", "populations": [{"g": "儿童", "t": "皮肤敏感先小范围试；脐部破损不用。"}, {"g": "老人", "t": "可给孙辈用。"}, {"g": "孕妇/产妇", "t": "产妇可用，孕早期谨慎。"}, {"g": "过敏体质", "t": "蜂蜜过敏改温水调。"}], "caution": "肚脐及周围皮肤破损、红肿禁用；敷后痒立即取下。", "doctor": "积食加重或过敏，就医。"},
+  {"id": 114, "cat": "睡眠", "emoji": "🌙", "name": "小儿夜啼·温腹保暖", "reli": "中", "sym": "婴儿入夜哭闹、时哭时止、腹凉", "mat": "肚兜/小背心、温毛巾", "method": "注意腹部保暖，穿肚兜；睡前温毛巾（约40℃）轻敷小腹5分钟。", "usage": "日常穿肚兜保暖；睡前温敷小腹5分钟。", "course": "作为日常护理坚持。", "folk": "中医称夜啼多因脾寒、受惊；保暖肚子、减少惊吓是家庭基础调护。", "populations": [{"g": "儿童", "t": "温度试手肘防烫；勿捂太厚。"}, {"g": "老人", "t": "帮带娃注意腹暖。"}, {"g": "孕妇/产妇", "t": "产妇护理新生儿。"}, {"g": "所有人", "t": "伴发热、呕吐、便血的哭闹要就医。"}], "caution": "❌ 别强行喂奶止哭（积食越喂越胀）；❌ 高热、精神差立即就医。", "doctor": "不明原因持续哭闹、伴发热/呕吐/血便，急诊。"},
+  {"id": 115, "cat": "其他", "emoji": "🦶", "name": "手脚冰凉·艾叶生姜泡脚", "reli": "中", "sym": "体寒怕冷、手脚冰凉、女生经期畏寒", "mat": "艾叶一把、生姜3片、40–45℃水", "method": "艾叶生姜煮水兑入泡脚水，泡20分钟，水面没过脚踝，微微出汗即可。", "usage": "睡前40–45℃泡20分钟，每周4–5次。", "course": "整个寒凉季坚持，出微汗即停勿大汗。", "folk": "艾叶温经散寒、生姜发汗，是性价比最高的暖身法（39健康网/复禾）。", "populations": [{"g": "儿童", "t": "水温略低、缩短至10分钟。"}, {"g": "老人", "t": "防烫，手肘试温，有人陪。"}, {"g": "孕妇/产妇", "t": "可用，禁高温；孕早期咨询。"}, {"g": "慢病(高血压/糖尿病)", "t": "糖尿病足/下肢血栓先问医生；饭后半小时再泡。"}], "caution": "①糖尿病注意水温防烫；②下肢静脉血栓先咨询医生；③经期量大者慎用。", "doctor": "冰凉伴疼痛、关节肿、肤色变，排查甲状腺/血管病。"},
+  {"id": 116, "cat": "其他", "emoji": "🔥", "name": "体寒·关元艾灸", "reli": "中", "sym": "阳虚体寒、怕冷、痛经、乏力", "mat": "艾条/艾灸盒、关元穴（脐下四指）", "method": "温和灸关元、气海、足三里，每穴15分钟，皮肤温热红润为度。", "usage": "每穴灸15分钟，每周2–3次，灸后保暖。", "course": "阳虚体质者长期调理，避开过饥过饱大汗时。", "folk": "艾灸是散寒的“小太阳”，温通经络补阳气（39健康网）。", "populations": [{"g": "儿童", "t": "需专业中医师操作，家长勿自行灸。"}, {"g": "老人", "t": "距离皮肤3–5厘米防烫伤。"}, {"g": "孕妇/产妇", "t": "腹部穴位孕期禁用。"}, {"g": "所有人", "t": "过饥过饱大汗时不宜；灸后避风受凉。"}], "caution": "❌ 瘢痕灸/针刺须专业医师；❌ 孕妇腹部禁灸；❌ 防烫伤。", "doctor": "伴明显疼痛、关节肿、闭经、严重痛经，就医排查器质问题。"},
+  {"id": 117, "cat": "其他", "emoji": "🍲", "name": "当归生姜羊肉汤", "reli": "中", "sym": "气血不足、畏寒肢冷、经期后虚弱", "mat": "当归10克、生姜30克、羊肉适量", "method": "羊肉焯水后与当归生姜同炖1–2小时，饮汤食肉。", "usage": "温服，每周1–2次，作温补药膳。", "course": "寒凉季调理，经期后或产后更佳。", "folk": "经典温补食疗方，温中补血、祛寒止痛（复禾健康）。", "populations": [{"g": "儿童", "t": "少量尝汤，肉煮烂。"}, {"g": "老人", "t": "适量，血脂高者少油。"}, {"g": "孕妇/产妇", "t": "产后血虚可用，孕早期慎用当归。"}, {"g": "慢病(高血压/糖尿病)", "t": "高血压/高血脂少量；发热感冒时不吃。"}], "caution": "①感冒发热、咽喉肿痛时停用；②阴虚火旺（口干舌红）少用。", "doctor": "长期怕冷伴乏力、面色苍白，排查贫血/甲减。"},
+  {"id": 118, "cat": "痛症", "emoji": "♨️", "name": "痛经·暖腹温经", "reli": "中", "sym": "经期小腹冷痛、得热则缓、畏寒", "mat": "热水袋/暖宝宝、艾叶生姜水", "method": "热水袋敷小腹15–20分钟；或艾叶生姜水泡脚；可温和灸关元。", "usage": "经痛时敷小腹15–20分钟；经期前2天起泡脚。", "course": "每次痛时做，经期前后连续调理。", "folk": "寒凝血瘀型痛经，温热能散寒止痛，是民间常用缓解法。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "帮女儿/孙女准备暖腹。"}, {"g": "孕妇/产妇", "t": "经期禁用腹部灸；产后可用。"}, {"g": "慢病(高血压/糖尿病)", "t": "糖尿病足泡脚先问医生。"}], "caution": "❌ 经期量大、热敷后更痛要停；❌ 未避孕停经者先排除怀孕。", "doctor": "剧痛难忍、非经期也痛、伴发热，就医排查子宫内膜异位症等。"},
+  {"id": 119, "cat": "其他", "emoji": "🫚", "name": "经期受寒·姜枣红糖饮", "reli": "中", "sym": "经期受凉、小腹坠冷、量少色暗", "mat": "生姜3片、红枣5枚、红糖适量", "method": "加水煮15分钟，温服。", "usage": "经前/经期温服，每日1–2次。", "course": "经期前后3–5天。", "folk": "生姜温经、红枣红糖补气血，驱散经期寒气。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "糖尿病老人去糖。"}, {"g": "孕妇/产妇", "t": "产后可用；孕期慎用大量姜。"}, {"g": "慢病(糖尿病)", "t": "去糖改用红枣。"}], "caution": "①月经量大者红糖减量；②阴虚火旺少用。", "doctor": "痛经剧烈或停经伴腹痛，先排除宫外孕等急症。"},
+  {"id": 120, "cat": "皮肤", "emoji": "🌿", "name": "侧柏叶生姜洗头", "reli": "中", "sym": "头油多、头屑、轻度脱发、头皮痒", "mat": "侧柏叶30克、生姜100克", "method": "两味洗净加水浸泡后煮沸10–15分钟，放温，纱布蘸药液擦头皮，最后清水冲净。", "usage": "放温后洗头/擦头皮，每周2–3次。", "course": "坚持1–2个月看变化，无需每天。", "folk": "侧柏叶凉血生发、生姜促循环，民间洗头方（民福康/39问医）。", "populations": [{"g": "儿童", "t": "少用，先做耳后过敏测试。"}, {"g": "老人", "t": "可常规用。"}, {"g": "孕妇/产妇", "t": "孕妇哺乳期慎用，先问医生。"}, {"g": "过敏体质", "t": "对侧柏/姜过敏、头皮破损炎症禁用。"}], "caution": "①浓度别太高、别太频，免刺激头皮；②头皮破损/红肿停用；③不能替代药物。", "doctor": "脱发每日超100根或成片秃斑，就医查因。"},
+  {"id": 121, "cat": "皮肤", "emoji": "🍚", "name": "淘米水·侧柏叶洗头", "reli": "低", "sym": "头屑多、发质干枯、须发早白", "mat": "淘米水、鲜侧柏叶30克", "method": "侧柏叶煮沸过滤，与淘米水混合洗头，按摩头皮5分钟，清水冲净。", "usage": "每周3次，按摩5分钟后冲净。", "course": "长期坚持，配合护发素防发干。", "folk": "淘米水含维生素B、侧柏叶乌发，民间养发方（博禾）。", "populations": [{"g": "儿童", "t": "稀释后少量用。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "慎用药材，先问医生。"}, {"g": "过敏体质", "t": "过敏测试后使用。"}], "caution": "①属药膳方，效果因人而异；②头皮破溃停用；③生何首乌有肝毒性，必须用炮制品且勿内服。", "doctor": "脱发加重或头皮感染，就医。"},
+  {"id": 122, "cat": "皮肤", "emoji": "🧼", "name": "头皮痒·茶麸洗头", "reli": "低", "sym": "头皮油、头屑、染烫受损", "mat": "茶麸粉100克、淘米水", "method": "茶麸粉泡淘米水24小时过滤，洗头按摩，修复毛鳞片。", "usage": "每周2–3次，按摩后清水冲净。", "course": "作为日常洗护替换。", "folk": "茶麸含茶皂素天然去油不伤发，民间护发（博禾）。", "populations": [{"g": "儿童", "t": "稀释使用。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用，天然温和。"}, {"g": "过敏体质", "t": "试用后无红肿再用。"}], "caution": "①天然≠人人适用，过敏者停；②油性头皮配合少脂饮食。", "doctor": "头皮红肿渗液、脱发加重，就医。"},
+  {"id": 123, "cat": "皮肤", "emoji": "🟫", "name": "湿疹·黄柏地榆湿敷", "reli": "中", "sym": "急性湿疹红斑、渗液、糜烂、剧痒", "mat": "黄柏、生地榆各适量", "method": "两味煎煮放凉，纱布浸药液湿敷患处15–20分钟，每日2–3次。", "usage": "放凉湿敷15–20分钟，每日2–3次。", "course": "急性期连用3–5天，渗液收敛即减。", "folk": "西苑医院刘宏推荐：马齿苋/黄柏/地榆清热解毒消肿止痒，快速收敛渗液。", "populations": [{"g": "儿童", "t": "浓度减半，家长操作。"}, {"g": "老人", "t": "皮肤薄，动作轻。"}, {"g": "孕妇/产妇", "t": "慎用药材，咨询医生。"}, {"g": "过敏体质", "t": "先做小范围测试。"}], "caution": "①仅限无破损或渗出期；②金银花/马齿苋更适合婴儿；③不能替代药物。", "doctor": "皮损化脓、发热、全身泛发，立即皮肤科就诊。"},
+  {"id": 124, "cat": "皮肤", "emoji": "🌾", "name": "荨麻疹·地肤子外洗", "reli": "中", "sym": "风疹块、皮肤瘙痒、时起时消", "mat": "地肤子15–30克", "method": "地肤子煮水放凉，擦洗或湿敷瘙痒处。", "usage": "放凉后擦洗/湿敷，每日2次。", "course": "发作期连用至消退。", "folk": "地肤子清热利湿祛风止痒，针对湿疹/荨麻疹瘙痒（复禾/山东省立医院）。", "populations": [{"g": "儿童", "t": "浓度减半。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "慎用，咨询医生。"}, {"g": "过敏体质", "t": "本身过敏体质更易发作，先做测试。"}], "caution": "①皮肤破损慎用防刺激；②草药外洗仅为辅助。", "doctor": "伴呼吸困难、喉头水肿、全身皮疹（过敏休克），立即急诊。"},
+  {"id": 125, "cat": "皮肤", "emoji": "🌼", "name": "虫咬痒·艾叶花椒薄荷浴", "reli": "中", "sym": "多处蚊虫叮咬、瘙痒广泛", "mat": "艾叶、花椒、鲜薄荷各适量", "method": "三味煮10分钟放温，纱布蘸洗全身或兑入洗澡水。", "usage": "放温擦洗或泡澡，每日1次。", "course": "蚊虫季按需使用。", "folk": "西苑医院刘宏应急方：艾叶花椒燥湿杀虫、薄荷清凉透表止痒。", "populations": [{"g": "儿童", "t": "浓度减半，防入口眼。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "孕妇慎用艾叶活血，咨询后用。"}, {"g": "过敏体质", "t": "先做测试，红肿加重停。"}], "caution": "①仅外用，勿入口眼；②皮肤破损少用花椒。", "doctor": "全身皮疹、呼吸困难，急诊。"},
+  {"id": 126, "cat": "皮肤", "emoji": "🌿", "name": "野菊花水止痒", "reli": "中", "sym": "小虫叮咬、热毒红肿痒", "mat": "干野菊花10–15克", "method": "野菊花煮5–10分钟放凉，棉签蘸涂或纱布湿敷10分钟，每日数次。", "usage": "放凉涂擦/湿敷，每日数次。", "course": "痒症期连用至消退。", "folk": "野菊花清热解毒消肿，民间虫咬应急方（西苑医院）。", "populations": [{"g": "儿童", "t": "防入口眼。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "少量外用。"}, {"g": "过敏体质", "t": "测试后使用。"}], "caution": "①外用为主；②破溃处轻柔。", "doctor": "红肿化脓、发热，就医。"},
+  {"id": 127, "cat": "五官", "emoji": "🍵", "name": "黑眼圈·茶包冰敷", "reli": "高", "sym": "熬夜/疲劳致眼周发黑、眼袋浮肿", "mat": "用过的袋泡茶、冰箱", "method": "茶包热水泡开放冰箱冷却，冰敷双眼约20分钟。", "usage": "每日冰敷1–2次，每次约20分钟。", "course": "作息改善后坚持1–2周。", "folk": "茶叶含咖啡因抗氧化，促进局部循环、减少眼周液体潴留（腾讯医典）。", "populations": [{"g": "儿童", "t": "少用，先睡好。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用，外部安全。"}, {"g": "过敏体质", "t": "茶敏者停用。"}], "caution": "①仅为外观护理；②单侧/不对称黑眼圈就医。", "doctor": "黑眼圈伴皮疹水疱、单侧不对称，就医排查。"},
+  {"id": 128, "cat": "五官", "emoji": "🌸", "name": "黑眼圈·菊杞熏蒸热敷", "reli": "中", "sym": "眼周暗沉、疲劳、干涩", "mat": "菊花3克、枸杞10克", "method": "两味煮水，利用蒸汽熏眼（闭眼、保持距离防烫），或放温后毛巾蘸热敷眼。", "usage": "熏/敷眼每次10分钟，每日1次。", "course": "配合早睡，连续2–4周。", "folk": "科普中国：菊花清热明目、枸杞补肝肾益精，熏蒸热敷改善眼周循环。", "populations": [{"g": "儿童", "t": "防烫，家长协助。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "枸杞控量，血糖高者少。"}], "caution": "①熏眼闭眼、距离防烫；②上火体质少用枸杞。", "doctor": "伴视力下降、眼痛，眼科就诊。"},
+  {"id": 129, "cat": "五官", "emoji": "👀", "name": "眼疲劳·运目熨目", "reli": "高", "sym": "久看屏幕眼干、酸胀、视疲劳", "mat": "双手、温水毛巾", "method": "①闭眼顺/逆时针转动眼球各36次；②掌心搓热捂双眼3–5遍；③40℃毛巾敷眼10分钟。", "usage": "每用眼40分钟做1轮，远眺5–10分钟。", "course": "日常坚持，作为护眼习惯。", "folk": "济南眼科医院中医护眼法：运目调经络、熨目温通阳气。", "populations": [{"g": "儿童", "t": "近视防控，家长督促每40分钟休息。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "干眼/近视", "t": "辅助，不能替代配镜/用药。"}], "caution": "①热敷防烫；②严重眼痛/视力下降就医。", "doctor": "眼痛、视力骤降、眼红畏光，眼科就诊。"},
+  {"id": 130, "cat": "五官", "emoji": "💧", "name": "眼干涩·温毛巾热敷", "reli": "高", "sym": "干眼、睑板腺功能障碍、眼干异物感", "mat": "40℃温水、干净毛巾", "method": "毛巾泡温拧干，闭眼敷10分钟，促进睑板腺油脂分泌。", "usage": "早晚各1次，每次10分钟。", "course": "干眼期长期坚持。", "folk": "温热促进睑脂排出、缓解干眼，是眼科常用家庭护理（济南眼科医院）。", "populations": [{"g": "儿童", "t": "防烫，家长试温。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "戴隐形眼镜", "t": "热敷前摘镜。"}], "caution": "①温度40℃防烫；②眼有化脓感染停用。", "doctor": "眼红痛、视力下降、分泌物多，就医。"},
+  {"id": 131, "cat": "五官", "emoji": "🔔", "name": "耳鸣·鸣天鼓", "reli": "中", "sym": "耳鸣、耳闷、脑鸣轻症", "mat": "双手", "method": "双手掌心紧按耳孔，食指叠中指上，下滑弹击后脑勺（风池上）24–36下，骤然放手。", "usage": "每日1–2次，每次24–36下。", "course": "作为日常调理，坚持2–4周。", "folk": "中医传统健耳法“鸣天鼓”，疏通耳部经络、醒脑安神。", "populations": [{"g": "儿童", "t": "家长带做，力度轻。"}, {"g": "老人", "t": "常用健耳法。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "耳疾", "t": "中耳炎/耳流脓禁用。"}], "caution": "①耳痛流脓、突发性耳聋禁用；②仅为辅助。", "doctor": "突发耳鸣耳聋、耳痛流脓、伴眩晕，立即耳鼻喉科。"},
+  {"id": 132, "cat": "五官", "emoji": "🍇", "name": "耳鸣·枸杞桑葚饮", "reli": "低", "sym": "肝肾不足型耳鸣、头晕、腰膝酸软", "mat": "枸杞10克、桑葚10克", "method": "沸水冲泡代茶饮。", "usage": "每日1剂代茶。", "course": "调理2–4周。", "folk": "枸杞滋补肝肾、桑葚滋阴补血，对应“肝肾亏虚则耳鸣”的中医思路。", "populations": [{"g": "儿童", "t": "少用。"}, {"g": "老人", "t": "肾虚耳鸣者适用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "桑葚偏甜，控量。"}], "caution": "①属药膳，辨证使用；②糖高者控量。", "doctor": "耳鸣持续/加重、伴听力下降，耳鼻喉科。"},
+  {"id": 133, "cat": "其他", "emoji": "🌙", "name": "熬夜·桑葚枸杞茶", "reli": "中", "sym": "熬夜后眼干、视糊、腰酸、虚火", "mat": "桑葚10克、枸杞10克", "method": "沸水冲泡代茶饮。", "usage": "熬夜后每日1剂。", "course": "作为事后补救，连用数日。", "folk": "澎湃新闻/中医：桑葚枸杞滋阴补血明目，针对“屏幕党”肝血亏虚型熬夜损伤。", "populations": [{"g": "儿童", "t": "少用。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "控量，偏甜。"}], "caution": "①补救≠抵消熬夜；②根本是睡好。", "doctor": "长期熬夜伴心慌胸闷，就医查因。"},
+  {"id": 134, "cat": "睡眠", "emoji": "😴", "name": "熬夜·午睡子午觉修复", "reli": "高", "sym": "睡眠不足、精力差、注意力下降", "mat": "无", "method": "夜间尽量23点前睡；午间小憩20–30分钟恢复精力。", "usage": "每日午睡20–30分钟，夜间保证7–8小时。", "course": "作为作息习惯长期坚持。", "folk": "“药补不如食补，食补不如睡补”，子时（23–1点）胆经、午时小憩最养身。", "populations": [{"g": "儿童", "t": "保证睡眠时长，小学生10小时。"}, {"g": "老人", "t": "规律作息。"}, {"g": "孕妇/产妇", "t": "多休养。"}, {"g": "所有人", "t": "午睡勿超1小时，避免夜间失眠。"}], "caution": "①午睡过长反而昏沉；②夜班族尽量补觉。", "doctor": "长期失眠、日间嗜睡影响生活，就医。"},
+  {"id": 135, "cat": "其他", "emoji": "🥣", "name": "熬夜·黑豆核桃粥", "reli": "低", "sym": "熬夜后掉发多、记性差、腰膝酸软", "mat": "黑豆50克、核桃仁30克、粳米100克、红枣5枚", "method": "同煮成粥，作早餐或加餐。", "usage": "温服，每周3–4次。", "course": "调理2–4周。", "folk": "黑豆补肾、核桃益脑，针对熬夜“脑力和肾虚”型损耗（澎湃新闻）。", "populations": [{"g": "儿童", "t": "少量，煮烂。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "产后可用。"}, {"g": "慢病(糖尿病)", "t": "控量，粥升糖快。"}], "caution": "①食疗辅助；②根本在少熬。", "doctor": "持续疲乏、掉发严重，就医。"},
+  {"id": 136, "cat": "其他", "emoji": "👄", "name": "口臭·淡盐水+刮舌", "reli": "中", "sym": "晨起口气、舌苔厚腻", "mat": "淡盐水、刮舌器/勺背", "method": "早晚淡盐水漱口；用刮舌器轻刮舌背苔垢，清水漱口。", "usage": "每日早晚各1次。", "course": "作为口腔护理习惯。", "folk": "舌苔是口臭重要来源，清洁舌面+淡盐水能明显改善口气。", "populations": [{"g": "儿童", "t": "家长协助，防呛。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "所有人", "t": "刮舌轻柔勿伤。"}], "caution": "①仅改善口源性口臭；②长期口臭查胃肠/牙病。", "doctor": "口臭伴胃痛、反酸、体重降，消化科就诊。"},
+  {"id": 137, "cat": "皮肤", "emoji": "🦶", "name": "脚气·白醋盐水泡脚", "reli": "中", "sym": "脚汗多、脚臭、轻度脚气瘙痒", "mat": "白醋1勺、盐少许、温水", "method": "白醋加盐溶于温水泡脚15分钟，每周3–4次，泡后擦干。", "usage": "温水泡15分钟，每周3–4次，泡后彻底擦干。", "course": "连用2–4周。", "folk": "白醋弱酸抑真菌、盐燥湿，民间辅助改善脚汗脚臭。", "populations": [{"g": "儿童", "t": "浓度减半。"}, {"g": "老人", "t": "糖尿病足先问医生。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病)", "t": "糖尿病足/破溃禁用，先问医生。"}], "caution": "①皮肤破溃刺痛停用；②不能替代抗真菌药。", "doctor": "起疱、化脓、红肿痛、扩散，皮肤科就诊。"},
+  {"id": 138, "cat": "其他", "emoji": "☀️", "name": "中暑·绿豆汤+刮痧", "reli": "中", "sym": "暑热头晕、口渴、烦闷、轻中暑", "mat": "绿豆、刮痧板/勺", "method": "绿豆煮汤放凉饮；轻刮痧（颈背肩）助散热，力度轻。", "usage": "绿豆汤少量多次饮；刮痧每日1次。", "course": "暑热季按需，症状退即停。", "folk": "绿豆清热解暑；刮痧解表散热，民间暑热常用。", "populations": [{"g": "儿童", "t": "绿豆汤稀释、少量。"}, {"g": "老人", "t": "防脱水，刮痧轻柔。"}, {"g": "孕妇/产妇", "t": "刮痧避开腹部；产后慎用。"}, {"g": "慢病(糖尿病/胃病)", "t": "胃寒者绿豆少放糖；糖尿病控甜。"}], "caution": "①重症中暑（高热昏迷）立即送医；②刮痧皮肤破损停。", "doctor": "高热、意识模糊、抽搐，立即急诊降温送医。"},
+  {"id": 139, "cat": "便民", "emoji": "🍊", "name": "晕车·鲜橘皮闻嗅", "reli": "中", "sym": "乘车船前兆恶心、反胃、头晕", "mat": "新鲜橘子皮", "method": "乘车前将橘皮对折挤汁，凑鼻反复闻嗅芳香油气味。", "usage": "出发前及途中随时闻嗅。", "course": "每次乘车船用。", "folk": "橘皮芳香化湿、和胃止呕，是民间天然晕车法（与内关穴并用更佳）。", "populations": [{"g": "儿童", "t": "家长给闻，防入口。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "孕早期呕吐可用，天然安全。"}, {"g": "过敏体质", "t": "柑橘过敏者改用内关穴。"}], "caution": "①严重呕吐脱水需药；②橘皮仅为缓解。", "doctor": "剧烈呕吐、脱水、视物旋转，就医排查。"},
+  {"id": 140, "cat": "解酒", "emoji": "🌿", "name": "解酒·葛花绿豆饮", "reli": "中", "sym": "酒后头痛、烦渴、胃不适", "mat": "葛花（或葛根）10克、绿豆适量", "method": "葛花煮水，绿豆煮汤，温饮助排解。", "usage": "酒后温饮，少量多次。", "course": "每次饮酒后。", "folk": "葛花历来“解酒毒”，绿豆清热，民间醒酒方。", "populations": [{"g": "儿童", "t": "不适用饮酒。"}, {"g": "老人", "t": "少饮酒，解酒饮温淡。"}, {"g": "孕妇/产妇", "t": "禁酒。"}, {"g": "胃病/肝病患者", "t": "肝病患者禁酒，解酒不能护肝。"}], "caution": "①最关键是少喝；②解酒方不能抵消酒精伤害。", "doctor": "醉酒昏迷、呕吐窒息、呼吸慢，立即急诊。"},
+  {"id": 141, "cat": "肠胃", "emoji": "🍌", "name": "便秘·熟香蕉黑芝麻", "reli": "中", "sym": "肠燥便秘、大便干结", "mat": "熟香蕉1根、黑芝麻粉1勺", "method": "熟香蕉直接吃，撒黑芝麻粉同食；或黑芝麻粉温水冲服。", "usage": "每日1次，早餐后为宜。", "course": "连用2–3天，排便规律后停。", "folk": "熟香蕉润肠、黑芝麻养血润燥，温和通便（生香蕉反而涩肠）。", "populations": [{"g": "儿童", "t": "1岁以上用；婴儿便秘看医生。"}, {"g": "老人", "t": "糖尿病控量。"}, {"g": "孕妇/产妇", "t": "孕期便秘友好。"}, {"g": "慢病(糖尿病)", "t": "控量，香蕉升糖。"}], "caution": "①要吃熟透带黑点的香蕉；②长期依赖查因。", "doctor": "便秘伴腹痛血便、体重降，就医。"},
+  {"id": 142, "cat": "肠胃", "emoji": "🫚", "name": "胃寒·干姜红枣茶", "reli": "中", "sym": "胃脘冷痛、喜热饮、吃凉就泻", "mat": "干姜3克、红枣5枚", "method": "干姜红枣煮15分钟温服。", "usage": "温服，每日1–2次。", "course": "胃寒期连服3–5天。", "folk": "干姜温中散寒、红枣健脾，针对脾胃虚寒型胃寒。", "populations": [{"g": "儿童", "t": "减量。"}, {"g": "老人", "t": "可用。"}, {"g": "孕妇/产妇", "t": "可用。"}, {"g": "慢病(糖尿病/胃病)", "t": "糖尿病去糖；胃溃疡反酸少用姜。"}], "caution": "①胃热反酸、口疮者不宜；②孕妇少量姜。", "doctor": "胃痛持续、黑便、消瘦，消化科就诊。"},
+{"id": 143, "cat": "其他", "emoji": "♂️", "name": "慢性前列腺炎·温水坐浴", "reli": "中", "sym": "会阴坠胀、尿频尿急、小腹不适（慢性前列腺炎辅助调理）", "mat": "温水盆（40–45℃）、或加黄柏/苦参煎剂", "method": "每日1–2次温水坐浴，水位没过会阴部，每次15–20分钟；坐浴后配合提肛运动（收缩肛门保持3–5秒后放松，重复数十次）。", "usage": "每日1–2次，避开发热急性期；坐浴后注意保暖防受凉。", "course": "作为慢性期辅助，长期坚持；症状缓解可减频。", "folk": "温水促进盆腔血运、缓解痉挛；提肛强化盆底肌，西医与中医均认可为辅助手段（华山医院/安贞医院）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "水温恒定防烫伤，每次≤20分钟。"}, {"g": "孕妇/产妇", "t": "女性不适用此方。"}, {"g": "慢病", "t": "急性细菌性伴发热禁用；糖尿患者注意会阴清洁。"}, {"g": "过敏体质", "t": "加中药煎剂前先做皮肤测试。"}], "caution": "❌ 急性感染期、发热、尿道出血禁用；❌ 勿烫伤口；❌ 不能替代抗生素等规范治疗。", "doctor": "尿频尿不尽超2周、发热、血尿、下腹坠痛加重，速到泌尿外科就诊，查前列腺液/超声。"},
+{"id": 144, "cat": "其他", "emoji": "♂️", "name": "前列腺保养·南瓜籽西红柿", "reli": "中", "sym": "男性日常前列腺保养、补充锌与抗氧化物", "mat": "生南瓜籽（无盐）、熟西红柿", "method": "每日嚼食生南瓜籽一小把（约30g）；西红柿熟吃（番茄红素易吸收），如番茄汤、炒蛋。", "usage": "作日常零食/配菜，长期坚持；饮水1500–2000ml/日。", "course": "长期保养，配合避免久坐、规律作息。", "folk": "南瓜籽富锌、西红柿富番茄红素，均为前列腺友好营养素（多方营养学共识）。", "populations": [{"g": "儿童", "t": "不需。"}, {"g": "老人", "t": "牙齿不好可碾碎；注意总热量。"}, {"g": "孕妇/产妇", "t": "女性亦可食，无害。"}, {"g": "慢病", "t": "肾病限钾者西红柿适量；南瓜籽油脂高，胆囊切除者少量。"}], "caution": "① 仅为食养，非治疗；② 南瓜籽高热量，肥胖者控量。", "doctor": "出现排尿异常、PSA升高等，男科/泌尿科就诊。"},
+{"id": 145, "cat": "其他", "emoji": "♂️", "name": "肾虚腰酸·搓腰泡脚", "reli": "低", "sym": "腰膝酸软、畏寒乏力、精力不济（中医肾虚范畴，需辨证）", "mat": "双手、温热水泡脚、可选艾叶", "method": "每日搓热双手捂后腰（肾俞区域）5分钟；睡前温水泡脚15分钟，可加艾叶。", "usage": "每日1次，泡脚后立刻保暖。", "course": "作为日常温补调理，长期。", "folk": "腰为肾之府，温煦腰肾、引血下行助眠（中医养生共识）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "防烫，水温≤45℃。"}, {"g": "孕妇/产妇", "t": "泡脚可，腰部勿重搓；阴虚火旺者少艾叶。"}, {"g": "慢病", "t": "高血压泡脚时间宜短；糖尿病足慎用高温。"}], "caution": "❌ 阴虚火旺（口干舌红、手足心热）者不宜温补；❌ 需中医辨证，不对症可能加重。", "doctor": "伴水肿、夜尿多、性功能明显异常，肾内科/中医科就诊。"},
+{"id": 146, "cat": "其他", "emoji": "🌸", "name": "痛经·热敷小腹", "reli": "高", "sym": "经期下腹痉挛性疼痛、腰酸", "mat": "热水袋/暖宝宝（40℃左右）、薄布", "method": "经前1–3天起，热水袋隔薄布敷下腹部，每次15–30分钟，每日2–3次。", "usage": "经期前后按需使用，与布洛芬等可联用加速缓解。", "course": "每次经期使用，至疼痛缓解。", "folk": "热敷扩张盆腔血管、缓解子宫痉挛，西医与中医均推荐（腾讯医典）。", "populations": [{"g": "儿童", "t": "不适用（未成年无经）。"}, {"g": "老人", "t": "不适用。"}, {"g": "孕妇/产妇", "t": "孕期禁用腹部热敷；产后需医嘱。"}, {"g": "慢病", "t": "皮肤感觉减退者防烫。"}, {"g": "过敏体质", "t": "暖宝宝先试贴防过敏。"}], "caution": "❌ 发热、剧烈痛伴冷汗晕倒立即就医；❌ 温度≤50℃防烫伤；❌ 不能替代止痛药。", "doctor": "痛到吃止痛药无效、伴恶心呕吐、经量过多、逐渐加重，妇科就诊排除内膜异位等。"},
+{"id": 147, "cat": "其他", "emoji": "🌸", "name": "宫寒·红糖姜茶", "reli": "中", "sym": "经期小腹冷痛、经血暗红有血块、量少色暗（宫寒/寒凝血瘀）", "mat": "红糖15g、生姜3片", "method": "生姜切片与红糖煮沸10分钟，趁温热饮，每日2–3次。", "usage": "经前/经期温服，每日2–3次；怕甜者减量。", "course": "每个经期连服2–3天，或经前一周起调理。", "folk": "姜辣素温经散寒、红糖补铁，民间与多份科普推荐（复禾健康）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "可饮，控糖。"}, {"g": "孕妇/产妇", "t": "孕早期少量姜；产后可饮。"}, {"g": "慢病", "t": "糖尿病去糖/少糖；胃溃疡反酸慎用。"}], "caution": "① 阴虚内热（口干舌红）不宜；② 不能替代药物治疗；③ 调理2–3周期无效就医。", "doctor": "痛经重、经期延长、闭经，妇科查激素六项/B超排除多囊、内膜异位。"},
+{"id": 148, "cat": "其他", "emoji": "🌸", "name": "月经不调·益母草鸡蛋汤", "reli": "中", "sym": "血瘀型月经不调、痛经、产后恶露不尽（需辨证）", "mat": "益母草50g（干品15g）、鸡蛋2枚", "method": "益母草与鸡蛋同煮5分钟，取蛋去壳再煮3分钟，吃蛋喝汤。", "usage": "经期后或遵医嘱，温热食；不宜长期天天喝。", "course": "对症调理，连服数日为一轮，停数日。", "folk": "益母草活血调经，妇科经产要药（腾讯医典）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "需中医辨证。"}, {"g": "孕妇/产妇", "t": "❌ 孕妇禁用（活血致流产）；产后恶露不尽可遵医嘱。"}, {"g": "慢病", "t": "脾胃虚寒、阴虚者不宜久用。"}], "caution": "❌ 孕妇绝对禁用；❌ 脾胃虚寒/阴虚者不宜长用；❌ 食疗不替代药物。", "doctor": "月经不调伴包块、异常出血，妇科就诊。"},
+{"id": 149, "cat": "其他", "emoji": "🌸", "name": "妇科·关元穴温灸", "reli": "中", "sym": "小腹寒冷、月经不调、痛经、虚劳怕冷（关元穴调理）", "mat": "艾条/艾灸盒、关元穴（脐下三寸）", "method": "艾条悬灸或灸盒，距皮肤3–5厘米，每穴20–30分钟，温热即可。", "usage": "每周2–3次，经前一周起；灸后保暖2小时。", "course": "长期温补调理。", "folk": "关元为元气之本，温灸暖胞宫、补阳气（腾讯医典穴位条）。", "populations": [{"g": "儿童", "t": "需专业医师操作。"}, {"g": "老人", "t": "距皮肤远些防烫。"}, {"g": "孕妇/产妇", "t": "❌ 孕期腹部穴位禁用。"}, {"g": "慢病", "t": "过饥过饱大汗时不宜。"}], "caution": "❌ 孕妇腹部禁灸；❌ 防烫伤；❌ 瘢痕灸须专业医师。", "doctor": "伴明显疼痛、闭经、严重痛经，就医排查器质性问题。"},
+{"id": 150, "cat": "睡眠", "emoji": "🌙", "name": "更年期·百合银耳羹", "reli": "中", "sym": "更年期潮热盗汗、心烦失眠、皮肤干燥", "mat": "银耳1朵、百合10g、枸杞15g、冰糖少", "method": "银耳泡发撕小朵，与百合同煮20分钟出胶，加枸杞、少许冰糖。", "usage": "每晚睡前1小时温服一小碗；隔日或每周3–4次。", "course": "坚持1周潮热减少，长期调理。", "folk": "银耳百合滋阴润燥、枸杞抗氧化，缓解阴虚燥热（当代健康报/复禾）。", "populations": [{"g": "儿童", "t": "可少量食。"}, {"g": "老人", "t": "易消化，适合。"}, {"g": "孕妇/产妇", "t": "可食，控糖。"}, {"g": "慢病", "t": "糖尿病去冰糖；经期量多者银耳慎大量。"}], "caution": "① 阴虚火旺者宜；② 不能替代激素治疗；③ 雌激素类保健品勿乱补。", "doctor": "潮热严重、情绪剧变、骨痛，妇科/内分泌科评估激素替代。"},
+{"id": 151, "cat": "其他", "emoji": "🌸", "name": "更年期·黑豆红枣汤", "reli": "中", "sym": "更年期激素水平波动、面色萎黄、关节酸痛、心烦", "mat": "黑豆50g（泡8h）、红枣10枚去核、陈皮3g", "method": "黑豆提前泡8小时，与红枣、陈皮慢炖2小时至软烂。", "usage": "作汤或配粥，每周3次；可加枸杞。", "course": "长期食养。", "folk": "黑豆异黄酮类雌激素、红枣补气血，缓和更年期波动（复禾健康）。", "populations": [{"g": "儿童", "t": "可少量。"}, {"g": "老人", "t": "软烂易消化。"}, {"g": "孕妇/产妇", "t": "可食。"}, {"g": "慢病", "t": "糖尿病减红枣；痛风缓解期适量。"}], "caution": "① 植物雌激素温和，非药物；② 忌盲目补充雌激素保健品。", "doctor": "症状重、月经紊乱明显，妇科就诊。"},
+{"id": 152, "cat": "睡眠", "emoji": "🌙", "name": "更年期·太溪神门涌泉", "reli": "中", "sym": "更年期口干心烦、夜醒、睡眠差", "mat": "双手（穴位按摩）", "method": "泡脚后按太溪（内踝与跟腱间凹）100次、神门（腕横纹小指侧）轻揉5分钟、涌泉（脚心前1/3）按揉100次。", "usage": "每晚睡前操作，每穴酸胀为度。", "course": "长期坚持，配合23点前睡。", "folk": "太溪滋肾、神门宁心、涌泉引火下行，助眠平烦（当代健康报）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "力度轻柔。"}, {"g": "孕妇/产妇", "t": "可按摩，避腹部。"}, {"g": "慢病", "t": "高血压患者动作放缓。"}], "caution": "① 仅为辅助调理；② 按揉以酸胀不痛为度。", "doctor": "失眠严重伴情绪障碍，身心科/妇科就诊。"},
+{"id": 153, "cat": "其他", "emoji": "🌸", "name": "更年期·豆制品补植物雌激素", "reli": "中", "sym": "更年期日常养护、调节内分泌", "mat": "豆浆/豆腐（每日大豆制品30–50g）", "method": "每日一杯无糖豆浆或一小块豆腐，作为植物雌激素温和来源。", "usage": "每日坚持，替代部分动物蛋白。", "course": "长期食养。", "folk": "大豆异黄酮温和调节内分泌，多方科普认可（当代健康报/复禾）。", "populations": [{"g": "儿童", "t": "适量即可。"}, {"g": "老人", "t": "好吸收。"}, {"g": "孕妇/产妇", "t": "可食。"}, {"g": "慢病", "t": "痛风者适量；乳腺/子宫病史者咨询医生。"}], "caution": "① 植物雌激素非药物；② 乳腺/妇科肿瘤史者先问医生；③ 别乱买雌激素保健品。", "doctor": "乳腺肿块、异常出血，乳腺科/妇科就诊。"},
+{"id": 154, "cat": "其他", "emoji": "🌸", "name": "更年期·玫瑰花疏肝", "reli": "中", "sym": "更年期情绪易怒、焦虑、腹胀", "mat": "干玫瑰花5朵、或加山楂10g", "method": "玫瑰花沸水冲泡代茶；腹胀抑郁可加山楂片煮水。", "usage": "下午饮用最佳，每日1剂。", "course": "长期调理情志。", "folk": "玫瑰花疏肝解郁、山楂消食，缓解更年期肝郁（复禾/河北广电）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "可饮。"}, {"g": "孕妇/产妇", "t": "孕早期慎；可少量。"}, {"g": "慢病", "t": "胃酸多者山楂减量；经期量多者玫瑰花慎。"}], "caution": "① 经期量多者玫瑰花减量；② 不能替代情绪治疗。", "doctor": "情绪障碍重、有轻生念头，身心科就诊。"},
+{"id": 155, "cat": "其他", "emoji": "🩸", "name": "高血压辅助·芹菜汁", "reli": "中", "sym": "高血压人群日常辅助（舒张血管、排钠）", "mat": "新鲜芹菜茎叶", "method": "鲜芹菜洗净榨汁，不加盐糖，每日1杯约200ml。", "usage": "每日1杯，长期；可凉拌/清炒替代。", "course": "长期辅助，配合低盐饮食。", "folk": "芹菜素舒张血管、高钾促钠排，有助降压（博禾/多家科普）。", "populations": [{"g": "儿童", "t": "可少量。"}, {"g": "老人", "t": "适合。"}, {"g": "孕妇/产妇", "t": "可食。"}, {"g": "慢病", "t": "❌ 低血压者慎饮；肾功能不全限钾者控量。"}], "caution": "① 仅为辅助，不能停降压药；② 低血压禁用；③ 肾功能异常限钾。", "doctor": "血压持续≥160/100、头晕视物模糊，急诊/心内科就诊。"},
+{"id": 156, "cat": "其他", "emoji": "🩸", "name": "三高辅助·苦瓜山药枸杞", "reli": "中", "sym": "高血糖/高血压人群食养辅助", "mat": "苦瓜100g、山药100g、枸杞15g", "method": "苦瓜山药清炒或煮汤，加枸杞，每周3–4次。", "usage": "作菜食用，少油少盐；脾胃虚寒者苦瓜减量。", "course": "长期食养。", "folk": "苦瓜皂苷类胰岛素、山药健脾、枸杞调内分泌（健康科普报）。", "populations": [{"g": "儿童", "t": "可食。"}, {"g": "老人", "t": "山药软糯适合。"}, {"g": "孕妇/产妇", "t": "可食。"}, {"g": "慢病", "t": "❌ 脾胃虚寒者苦瓜适量；糖尿病算入主食量。"}], "caution": "① 不能替代降糖药；② 苦瓜性寒，胃寒者少。", "doctor": "血糖持续高、出现酮症症状，内分泌科就诊。"},
+{"id": 157, "cat": "其他", "emoji": "🩸", "name": "高血脂辅助·山楂荷叶陈皮茶", "reli": "中", "sym": "高血脂、油腻饮食、血脂偏高辅助", "mat": "山楂15g、荷叶10g、陈皮6g", "method": "三味煎水代茶饮，每日1剂。", "usage": "每日1剂，餐后饮；胃酸多减量。", "course": "长期辅助，配低脂饮食。", "folk": "山楂活血降脂、荷叶利湿、陈皮理气（健康科普报）。", "populations": [{"g": "儿童", "t": "不适用长期。"}, {"g": "老人", "t": "可饮，减量。"}, {"g": "孕妇/产妇", "t": "孕妇山楂适量；陈皮温和。"}, {"g": "慢病", "t": "❌ 胃酸过多/胃炎不宜大量；服药者问医师。"}], "caution": "① 不能替代他汀等药物；② 胃酸过多者不宜；③ 与降脂药同服问医生。", "doctor": "血脂明显异常、胸闷，心内科/血脂门诊就诊。"},
+{"id": 158, "cat": "其他", "emoji": "🩸", "name": "降压茶饮·菊花山楂决明子", "reli": "中", "sym": "肝阳上亢型头晕、高血压辅助", "mat": "菊花10g、山楂15g、炒决明子10g", "method": "三味沸水冲泡代茶，每日1剂。", "usage": "每日1剂，温饮；腹泻者决明子减量。", "course": "长期辅助。", "folk": "菊花平肝、山楂活血、决明子润肠降压（健康科普报）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "适合减量。"}, {"g": "孕妇/产妇", "t": "决明子孕早期慎；可去决明子。"}, {"g": "慢病", "t": "❌ 腹泻者决明子减；低血压慎。"}], "caution": "① 不能停降压药；② 腹泻者慎用决明子；③ 低血压禁用。", "doctor": "头晕伴肢体麻木、言语不清，立即就医排除中风。"},
+{"id": 159, "cat": "其他", "emoji": "🩸", "name": "降脂·红曲米水", "reli": "中", "sym": "高胆固醇辅助（天然洛伐他汀类似物）", "mat": "红曲米20g", "method": "红曲米煮水饮用，每日1次。", "usage": "每日1次，长期；避免与降脂药同服增强副作用。", "course": "长期辅助。", "folk": "红曲含天然他汀类物质，抑制胆固醇合成（博禾医生）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "可少量。"}, {"g": "孕妇/产妇", "t": "孕妇慎用。"}, {"g": "慢病", "t": "❌ 不可与他汀类药物同服；肝功异常者问医生。"}], "caution": "① 含天然他汀，勿与降脂药叠加；② 肝肾功能不全者慎用；③ 不能替代药物。", "doctor": "血脂高伴黄疸、肌痛，立即就医查肝功/肌酸激酶。"},
+{"id": 160, "cat": "其他", "emoji": "🩸", "name": "三高主食·燕麦β葡聚糖", "reli": "中", "sym": "三高人群主食替代、稳糖降脂", "mat": "整粒燕麦/生燕麦片（无添加糖）", "method": "燕麦煮粥或配牛奶/豆浆作早餐，选无添加糖产品。", "usage": "每日早餐适量（干重约40–50g），长期。", "course": "长期替代精米白面。", "folk": "β-葡聚糖延缓糖吸收、降LDL胆固醇（多家内分泌科普）。", "populations": [{"g": "儿童", "t": "可食。"}, {"g": "老人", "t": "易消化。"}, {"g": "孕妇/产妇", "t": "可食。"}, {"g": "慢病", "t": "❌ 麸质过敏者选无麸质燕麦；糖尿病算入主食。"}], "caution": "① 选无糖纯燕麦，避即食甜款；② 不能替代药物；③ 麸质过敏换其他。", "doctor": "血糖血压失控，内分泌/心内科就诊。"},
+{"id": 161, "cat": "其他", "emoji": "🩸", "name": "降压·洋葱前列腺素A", "reli": "中", "sym": "高血压/高血糖辅助、保护血管", "mat": "紫皮洋葱", "method": "洋葱生吃或短时快炒，保留活性成分，作配菜。", "usage": "日常配菜，每周数次；胃肠好者可生食。", "course": "长期食养。", "folk": "前列腺素A扩血管、硫化物改善胰岛素敏感（博禾/内分泌科普）。", "populations": [{"g": "儿童", "t": "可少量。"}, {"g": "老人", "t": "胃肠弱则熟吃。"}, {"g": "孕妇/产妇", "t": "可食。"}, {"g": "慢病", "t": "❌ 胃肠敏感/溃疡者少量；低血糖注意监测。"}], "caution": "① 辛辣，胃肠敏感者适量；② 仅为辅助。", "doctor": "指标异常伴不适，相应科室就诊。"},
+{"id": 162, "cat": "其他", "emoji": "🐟", "name": "护血管·深海鱼欧米伽3", "reli": "中", "sym": "三高/心血管养护、降甘油三酯", "mat": "三文鱼/鲭鱼/鳕鱼等深海鱼", "method": "清蒸或煮汤，每周2–3次，每次约100–150g。", "usage": "每周2–3次，替代红肉部分。", "course": "长期食养。", "folk": "欧米伽3降甘油三酯、抗炎护血管（多家科普）。", "populations": [{"g": "儿童", "t": "可食，去刺。"}, {"g": "老人", "t": "清蒸易消化。"}, {"g": "孕妇/产妇", "t": "可食，选低汞鱼。"}, {"g": "慢病", "t": "痛风缓解期适量；海鲜过敏禁用。"}], "caution": "① 海鲜过敏禁用；② 痛风急性发作期少；③ 不能替代药物。", "doctor": "胸痛、胸闷，心内科就诊。"},
+{"id": 163, "cat": "其他", "emoji": "🌸", "name": "乳腺增生·疏肝理气食养", "reli": "低", "sym": "经前乳房胀痛、情绪郁结（需辨证，非治疗）", "mat": "玫瑰花、陈皮、白萝卜", "method": "玫瑰花3朵+陈皮3g泡水；多食白萝卜、青菜，少油腻辛辣。", "usage": "经前1周起每日代茶；长期情志调理。", "course": "长期，配合情绪管理。", "folk": "肝郁气滞型胀痛，疏肝理气为中医思路（科普共识）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "可饮。"}, {"g": "孕妇/产妇", "t": "孕早期玫瑰花慎；可萝卜。"}, {"g": "慢病", "t": "胃寒者陈皮减量。"}], "caution": "❌ 仅为养生辅助，不能替代乳腺检查；❌ 需中医辨证。", "doctor": "乳房肿块、溢液、皮肤改变，乳腺科就诊做超声/钼靶。"},
+{"id": 164, "cat": "其他", "emoji": "🌸", "name": "备孕暖宫·艾叶肉桂足浴", "reli": "低", "sym": "宫寒、手脚凉、备孕暖胞宫（需辨证）", "mat": "艾叶、肉桂（或艾叶生姜）", "method": "艾叶+少量肉桂煮水泡脚15–20分钟，每周3–4次。", "usage": "睡前泡，泡后保暖；避开经期过多。", "course": "长期温养。", "folk": "艾叶温经、肉桂补火助阳，中医暖宫常用（复禾健康）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "防烫。"}, {"g": "孕妇/产妇", "t": "❌ 备孕可用，确诊怀孕后停活血类；遵医嘱。"}, {"g": "慢病", "t": "高血压泡脚宜短；糖尿病足慎高温。"}], "caution": "❌ 需中医辨证，阴虚火旺忌；❌ 孕后停；❌ 非治疗不孕。", "doctor": "备孕1年未孕（35岁以上半年），生殖科就诊。"},
+{"id": 165, "cat": "睡眠", "emoji": "🌙", "name": "男性熬夜肾虚·黑芝麻桑葚", "reli": "低", "sym": "熬夜后腰酸、脱发、精力差（中医肾虚调理，需辨证）", "mat": "黑芝麻、桑葚干", "method": "黑芝麻炒熟碾碎拌粥，桑葚干每日一小把（10–15颗）或煮粥。", "usage": "作日常食养，长期坚持。", "course": "长期调理。", "folk": "黑色入肾、桑葚滋阴，民间与中医养生常用。", "populations": [{"g": "儿童", "t": "可少量。"}, {"g": "老人", "t": "适合。"}, {"g": "孕妇/产妇", "t": "可食。"}, {"g": "慢病", "t": "糖尿病桑葚控量；腹泻者芝麻减量。"}], "caution": "❌ 需辨证，湿热体质不宜；❌ 非治疗。", "doctor": "明显性功能异常、水肿，肾内科/中医科就诊。"},
+{"id": 166, "cat": "其他", "emoji": "🩸", "name": "血糖辅助·绿茶", "reli": "中", "sym": "三高人群饮品辅助", "mat": "未发酵绿茶", "method": "每日2–3杯淡绿茶，避免空腹、不加糖。", "usage": "每日2–3杯，长期；下午前饮免影响睡眠。", "course": "长期辅助。", "folk": "茶多酚改善血管弹性、助稳糖降脂（博禾医生）。", "populations": [{"g": "儿童", "t": "少量淡茶。"}, {"g": "老人", "t": "淡茶为宜。"}, {"g": "孕妇/产妇", "t": "少量淡茶；避免浓茶。"}, {"g": "慢病", "t": "❌ 贫血/胃病者少空腹；失眠者下午后不喝。"}], "caution": "① 空腹刺激胃；② 影响铁吸收，贫血者饭后；③ 不能替代药。", "doctor": "血糖异常伴多饮多尿，内分泌科就诊。"},
+{"id": 167, "cat": "其他", "emoji": "🌸", "name": "产后恶露·益母草调理", "reli": "低", "sym": "产后恶露不尽、瘀滞腹痛（需医师指导）", "mat": "益母草颗粒/鲜益母草", "method": "遵医嘱用益母草颗粒，或益母草鸡蛋汤，促宫缩排恶露。", "usage": "产后短期内，遵医嘱；不自行长用。", "course": "产后恢复期，医师指导。", "folk": "益母草为产后要药，活血祛瘀（腾讯医典）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "不适用。"}, {"g": "孕妇/产妇", "t": "❌ 孕期禁用；产后需医师指导用。"}, {"g": "慢病", "t": "脾胃虚寒者不宜久。"}], "caution": "❌ 孕期禁用；❌ 必须医师指导，不自行用药；❌ 恶露异常伴发热就医。", "doctor": "恶露臭、发热、大出血，产科急诊。"},
+{"id": 168, "cat": "其他", "emoji": "🩸", "name": "头晕耳鸣·天麻钩藤饮", "reli": "低", "sym": "肝阳上亢头晕、高血压辅助（需辨证）", "mat": "天麻、钩藤", "method": "天麻10g、钩藤10g（后下）煎水代茶，每日1剂。", "usage": "每日1剂，温饮；长期辅助。", "course": "辅助调理，配合降压药。", "folk": "天麻平肝熄风、钩藤清肝降压，中医降压常用（健康科普报）。", "populations": [{"g": "儿童", "t": "不适用。"}, {"g": "老人", "t": "适合减量。"}, {"g": "孕妇/产妇", "t": "孕妇慎用；遵医嘱。"}, {"g": "慢病", "t": "❌ 低血压慎；不能停降压药。"}], "caution": "❌ 需中医辨证；❌ 不能替代降压药；❌ 低血压禁用。", "doctor": "头晕伴肢体麻木、言语不清，立即就医排中风。"},
+{"id": 169, "cat": "便民", "emoji": "🛠️", "name": "久坐男·提肛运动", "reli": "高", "sym": "久坐人群预防前列腺充血、改善盆底", "mat": "无（随时随地）", "method": "收缩肛门保持3–5秒后放松，重复10–15次为1组，每日3–5组。", "usage": "每日3–5组，站立坐姿均可；保持正常呼吸。", "course": "长期坚持，作日常保健。", "folk": "凯格尔/提肛强化盆底肌，改善局部循环（安贞医院/博禾）。", "populations": [{"g": "儿童", "t": "无需。"}, {"g": "老人", "t": "可做，力度适中。"}, {"g": "孕妇/产妇", "t": "产后盆底康复宜；孕期遵医嘱。"}, {"g": "慢病", "t": "急性发作期多休息。"}], "caution": "① 避免过度用力；② 仅为保健辅助；③ 症状重就医。", "doctor": "排尿困难、疼痛加重，泌尿外科就诊。"},
+{"id": 170, "cat": "睡眠", "emoji": "🌙", "name": "更年失眠·酸枣仁百合粥", "reli": "中", "sym": "更年期/虚烦失眠、心悸", "mat": "酸枣仁（打碎）10g、百合15g、粳米", "method": "酸枣仁煎汁去渣，与百合粳米同煮粥。", "usage": "晚餐或睡前2小时温服；长期。", "course": "连服1–2周看改善。", "folk": "酸枣仁养心肝之血、百合清心，安神助眠（中医食疗）。", "populations": [{"g": "儿童", "t": "需中医辨证，不擅自。"}, {"g": "老人", "t": "适合。"}, {"g": "孕妇/产妇", "t": "孕妇慎用药材，问医师。"}, {"g": "慢病", "t": "低血压者酸枣仁适量。"}], "caution": "① 药材需辨证，儿童孕妇问医生；② 不能替代安眠药。", "doctor": "失眠伴情绪低落、焦虑，身心科就诊。"}
+];
+/* ===== 辟谣：危险伪土方 ===== */
+const MYTHS = [
+  {bad:'烫伤后涂牙膏、酱油、香油、大酱', good:'立刻用流动冷水冲15–20分钟，再覆盖干净纱布',
+   why:'牙膏只是薄荷暂时清凉，会污染创面、滋生细菌；酱油影响医生判断伤情。'},
+  {bad:'流鼻血时仰头、塞纸巾', good:'身体前倾、捏住鼻翼10分钟',
+   why:'仰头会让血倒流呛入气管甚至窒息；塞纸易二次损伤鼻黏膜。'},
+  {bad:'鱼刺卡喉喝醋、吞饭团馒头', good:'看得见用镊子取，否则立即就医',
+   why:'醋不能软化鱼刺，吞饭会把刺推得更深，可能刺破食管血管。'},
+  {bad:'扭伤马上揉搓、热敷', good:'先休息、冰敷、包扎、抬高（RICE），48小时后再热敷',
+   why:'急性期揉热会加重出血肿胀，拖延恢复。'},
+  {bad:'伤口同时用红药水 + 碘酒', good:'单用碘伏消毒即可',
+   why:'两者混合生成剧毒碘化汞，可引发汞中毒。'},
+  {bad:'昏迷了用力掐人中', good:'判断意识与呼吸，无呼吸心跳立刻心肺复苏并打120',
+   why:'乱掐人中起不到急救作用，反而延误抢救。'},
+  {bad:'被蛇咬用嘴吸毒', good:'制动、低于心脏、尽快到急诊',
+   why:'口腔黏膜通透，毒液会经施救者血液进入体内，两人都中毒。'},
+  {bad:'老人摔倒急忙扶起来', good:'怀疑骨折先别动，保暖止血，等120',
+   why:'骨质疏松者匆忙扶起可能加重骨折或脊髓损伤。'},
+  {bad:'溺水后倒立控水', good:'平放、清口鼻异物、无呼吸立刻人工呼吸+心肺复苏',
+   why:'倒立控水作用甚微且延误抢救。'},
+  {bad:'伤口撒香灰、涂酒精原液', good:'清水冲洗+碘伏+包扎',
+   why:'香灰带菌致感染，原液酒精刺激损伤组织。'},
+];
+
+/* ===== 渲染逻辑 ===== */
+let curCat='all', kw='';
+function favs(){ try{return JSON.parse(localStorage.getItem('tfz_fav')||'[]');}catch(e){return[];} }
+function toggleFav(id){ let f=favs(); f.includes(id)?f=f.filter(x=>x!=id):f.push(id);
+  localStorage.setItem('tfz_fav',JSON.stringify(f)); renderList(); if(curView==='fav')renderFav(); updateFavIcons(); }
+function isFav(id){return favs().includes(id);}
+
+/* ===== 激活码体系（9.9 解锁完整版） ===== */
+const TFZ_SEED = "houge-tfz-2026-jiuzhe";
+const TFZ_BASE = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+function tfzMask(num){ // 与 gen_codes.py 完全对称（零溢出风险）
+  const s = TFZ_SEED + String(num);
+  let seed = 0;
+  for(let i=0;i<s.length;i++){ seed = (seed + s.charCodeAt(i) * 17 + 7) % 1000000007; }
+  let x = seed, out = '';
+  for(let i=0;i<12;i++){
+    x = (x * 31 + 12345) % 1000000007;
+    out += TFZ_BASE[x % TFZ_BASE.length];
+  }
+  return out;
+}
+function tfzVerify(code){
+  code=(code||'').trim().toUpperCase().replace(/\s/g,'');
+  if(!code.startsWith('TFZ-'))return false;
+  const body=code.slice(4).replace(/-/g,'');
+  if(body.length!==12)return false;
+  for(let num=1;num<10000;num++){ if(tfzMask(num)===body) return true; }
+  return false;
+}
+const TFZ_KEY='tfz_unlock_v1';
+function isUnlocked(){ try{ return localStorage.getItem(TFZ_KEY)==='1'; }catch(e){ return false; } }
+function doUnlock(code){
+  if(isUnlocked()) return {ok:true,msg:'已解锁，无需重复输入'};
+  if(!tfzVerify(code)) return {ok:false,msg:'激活码无效，请检查格式（TFZ-XXXX-XXXX-XXXX）或联系侯哥补发'};
+  try{ localStorage.setItem(TFZ_KEY,'1'); }catch(e){}
+  return {ok:true,msg:'🎉 解锁成功！170 个方子 + 10 条辟谣全部开放'};
+}
+const FREE_LIMIT = 12; // 免费体验前 12 条（按 id）
+function isFree(d){ return d.id <= FREE_LIMIT; }
+
+function renderChips(){
+  document.getElementById('chips').innerHTML = CATS.map(c=>
+    `<div class="chip ${c.key===curCat?'on':''}" onclick="setCat('${c.key}')">${c.name}</div>`).join('');
+}
+function setCat(k){curCat=k; renderChips(); renderList();}
+
+function renderList(){
+  let arr = DATA.filter(d=> (curCat==='all'||d.cat===curCat));
+  if(kw){ arr = arr.filter(d=> (d.name+d.sym+d.method+d.folk+d.cat+(d.usage||'')+(d.course||'')+(d.populations||[]).map(p=>p.g+p.t).join('')).toLowerCase().includes(kw.toLowerCase())); }
+  const box=document.getElementById('list');
+  if(!arr.length){box.innerHTML='<div class="empty">没找到相关土方子，换个词试试～</div>';return;}
+  box.innerHTML = arr.map(d=>{
+    const locked = !isUnlocked() && !isFree(d);
+    return `
+    <div class="card ${locked?'locked':''}" onclick="openDetail(${d.id})">
+      <div class="emoji">${locked?'🔒':d.emoji}</div>
+      <div class="body">
+        <div class="t">${locked?'完整版专享 · '+d.name:d.name}<span class="tag ${d.reli}">${d.reli}可靠</span></div>
+        <div class="s">${locked?'🔓 输入激活码查看做法 / 疗程 / 人群方案':('适用：'+d.sym)}</div>
+      </div>
+      <button class="fav-btn ${isFav(d.id)?'on':''}" onclick="event.stopPropagation();toggleFav(${d.id})">${isFav(d.id)?'★':'☆'}</button>
+    </div>`;}).join('');
+}
+function updateFavIcons(){ document.querySelectorAll('.fav-btn').forEach(b=>{}); }
+
+function renderFav(){
+  const f=favs(); const arr=DATA.filter(d=>f.includes(d.id));
+  const box=document.getElementById('favList');
+  if(!arr.length){box.innerHTML='<div class="empty">还没有收藏～<br>在方子上点 ☆ 就能存到这里</div>';return;}
+  box.innerHTML=arr.map(d=>{
+    const locked = !isUnlocked() && !isFree(d);
+    return `
+    <div class="card ${locked?'locked':''}" onclick="openDetail(${d.id})">
+      <div class="emoji">${locked?'🔒':d.emoji}</div>
+      <div class="body"><div class="t">${locked?d.name+'（完整版）':d.name}<span class="tag ${d.reli}">${d.reli}可靠</span></div>
+      <div class="s">${locked?'🔓 解锁后查看':'适用：'+d.sym}</div></div>
+      <button class="fav-btn on" onclick="event.stopPropagation();toggleFav(${d.id})">★</button>
+    </div>`;}).join('');
+}
+
+function renderCat(){
+  const grid=document.getElementById('catGrid');
+  const items=CATS.filter(c=>c.key!=='all');
+  grid.innerHTML=items.map(c=>{
+    const n=DATA.filter(d=>d.cat===c.key).length;
+    const emo={'感冒':'🤧','咳嗽':'😷','肠胃':'🍲','睡眠':'🌙','外伤':'🩹','便民':'🛠️','皮肤':'🦶','痛症':'💊','五官':'👃','解酒':'🍺','其他':'🌟'}[c.key];
+    return `<div class="gc" onclick="setCat('${c.key}');switchTab('home')">
+      <div class="e">${emo}</div><div class="n">${c.name}</div><div class="c">${n} 个方子</div></div>`;
+  }).join('');
+}
+
+function renderMyths(){
+  document.getElementById('mythList').innerHTML = MYTHS.map(m=>`
+    <div class="myth">
+      <div class="bad">❌ ${m.bad}</div>
+      <div class="good">✅ ${m.good}</div>
+      <div class="why">📌 ${m.why}</div>
+    </div>`).join('');
+}
+
+function openDetail(id){
+  const d=DATA.find(x=>x.id===id); if(!d)return;
+  if(!isUnlocked() && !isFree(d)){
+    showPayWall(d);
+    return;
+  }
+  document.getElementById('sTitle').innerHTML=`${d.emoji} ${d.name} <span class="tag ${d.reli}">${d.reli}可靠</span>`;
+  document.getElementById('sBody').innerHTML=`
+    <div class="blk"><div class="k">🎯 适用症状</div><div class="v">${d.sym}</div></div>
+    <div class="blk"><div class="k">🧺 需要准备</div><div class="v">${d.mat}</div></div>
+    <div class="blk"><div class="k">📝 做法</div><div class="v">${d.method}</div></div>
+    <div class="blk"><div class="k">🍽️ 食用方法</div><div class="v">${d.usage}</div></div>
+    <div class="blk"><div class="k">📅 建议疗程</div><div class="v">${d.course}</div></div>
+    <div class="blk"><div class="k">💡 民间说法 / 原理</div><div class="v">${d.folk}</div></div>
+    <div class="blk" style="border-left:4px solid #07c160;"><div class="k">👥 不同人群方案</div><div class="v">${(d.populations||[]).map(p=>`<div style="margin:6px 0;"><b style="color:#06ad56;">${p.g}</b>：${p.t}</div>`).join('')}</div></div>
+    <div class="blk warn"><div class="k">⚠️ 注意事项 / 禁忌</div><div class="v">${d.caution}</div></div>
+    <div class="blk go"><div class="k">🏥 什么情况必须就医</div><div class="v">${d.doctor}</div></div>
+    <button class="fav-btn ${isFav(d.id)?'on':''}" style="font-size:16px;width:100%;padding:12px;border-radius:12px;background:${isFav(d.id)?'#fff7e6':'#f2f3f5'};color:#c0392b;border:1px solid #ffe2a8;" onclick="toggleFav(${d.id});openDetail(${d.id})">${isFav(d.id)?'★ 已收藏':'☆ 收藏这个方子'}</button>
+  `;
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+}
+function closeSheet(){document.getElementById('mask').classList.remove('show');document.getElementById('sheet').classList.remove('show');}
+
+/* 付费墙：展示方名概况 + 激活入口 */
+function showPayWall(d){
+  document.getElementById('sTitle').innerHTML=`🔒 ${d.name} <span class="tag ${d.reli}">${d.reli}可靠</span>`;
+  document.getElementById('sBody').innerHTML=`
+    <div class="blk"><div class="k">🎯 适用症状</div><div class="v">${d.sym}</div></div>
+    <div class="paywall">
+      <div class="pw-t">📦 这是「完整版」专享内容</div>
+      <div class="pw-d">完整版共 <b>170 个方子</b>（感冒/咳嗽/肠胃/睡眠/皮肤/痛症/五官/男科/妇科/更年期/三高…）+ <b>10 条救命辟谣</b>，每条都带：<br>
+      ✅ 具体做法　✅ 食用方法　✅ 建议疗程　✅ 不同人群方案（孕妇/儿童/慢病）　✅ 就医信号</div>
+      <div class="pw-price">💰 一次性 <b>6.66 元</b>，永久解锁，本地离线可用</div>
+      <button class="pw-btn" onclick="openActivate()">🔓 输入激活码解锁</button>
+      <div class="pw-note">已购买？输入激活码即可。没码？加侯哥微信 <b>ZNGHS_HYL</b> 发 6.66 元领码。</div>
+    </div>`;
+  document.getElementById('mask').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+}
+
+/* 激活弹层 */
+function openActivate(){
+  closeSheet();
+  document.getElementById('actCode').value='';
+  document.getElementById('actMsg').textContent='';
+  document.getElementById('actMask').classList.add('show');
+  document.getElementById('actSheet').classList.add('show');
+  setTimeout(()=>document.getElementById('actCode').focus(),200);
+}
+function closeActivate(){document.getElementById('actMask').classList.remove('show');document.getElementById('actSheet').classList.remove('show');}
+function submitActivate(){
+  const code=document.getElementById('actCode').value;
+  const r=doUnlock(code);
+  const msg=document.getElementById('actMsg');
+  if(r.ok){
+    msg.style.color='#06ad56'; msg.textContent=r.msg;
+    renderList(); if(curView==='fav')renderFav(); updateTfzBar();
+    setTimeout(()=>{ closeActivate(); },1200);
+  }else{
+    msg.style.color='#ff3b30'; msg.textContent=r.msg;
+  }
+}
+function updateTfzBar(){
+  const bar=document.getElementById('tfzBar');
+  if(isUnlocked()){ bar.innerHTML='✅ 已解锁完整版 · 170 方子 + 10 辟谣全部开放'; bar.classList.add('on'); }
+  else { bar.innerHTML='🔓 免费体验 12 个方子 + 10 条辟谣 · 解锁完整版仅 6.66 元'; bar.classList.remove('on'); }
+}
+
+let curView='home';
+function switchTab(v){
+  curView=v;
+  ['home','cat','fav','myth','about'].forEach(x=>document.getElementById('view-'+x).classList.toggle('hidden',x!==v));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v===v));
+  if(v==='fav')renderFav();
+  if(v==='about'){ const st=document.getElementById('tfzStatus'); if(st) st.innerHTML = isUnlocked()?'<span style="color:#06ad56;">✅ 当前状态：已解锁完整版</span>':'<span style="color:#ff9f0a;">🔒 当前状态：免费体验中，解锁请点上方按钮</span>'; }
+  window.scrollTo(0,0);
+}
+function onSearch(){kw=document.getElementById('kw').value.trim();
+  if(curView!=='home')switchTab('home'); renderList();}
+
+/* 初始化 */
+renderChips(); renderList(); renderCat(); renderMyths(); updateTfzBar();
+</script>
+<script>if(location.protocol.indexOf("http")===0&&navigator.serviceWorker){navigator.serviceWorker.register("sw.js").catch(function(){});}</script>
+</body>
+</html>
