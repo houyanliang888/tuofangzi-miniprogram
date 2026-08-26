@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>土方子小百科 · 激活码领取</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,"PingFang SC",sans-serif;background:linear-gradient(160deg,#0f3d2e,#0a2a20);color:#eaf1f8;min-height:100vh;padding:24px 16px;display:flex;flex-direction:column;align-items:center}
+  .card{width:100%;max-width:420px;background:#13402f;border:1px solid #1f6b4d;border-radius:16px;padding:22px 18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  h1{font-size:20px;margin:0 0 4px;color:#2bd07e;text-align:center}
+  .sub{font-size:13px;color:#9fd9c2;text-align:center;margin-bottom:18px}
+  .price{font-size:34px;font-weight:800;text-align:center;color:#fff;margin:6px 0}
+  .price small{font-size:14px;color:#9fd9c2;font-weight:400}
+  .btn{display:block;width:100%;padding:15px;margin:16px 0 6px;border:0;border-radius:12px;background:#2bd07e;color:#0a2a20;font-size:17px;font-weight:700;cursor:pointer}
+  .btn:active{transform:scale(.98)}
+  .hint{font-size:12px;color:#8ac3ad;text-align:center;margin-bottom:10px}
+  .result{margin-top:14px;padding:16px;border:1px dashed #2bd07e;border-radius:12px;background:#0a2a20;text-align:center;display:none}
+  .result .lab{font-size:12px;color:#9fd9c2}
+  .code{font-size:22px;font-weight:800;letter-spacing:1px;color:#2bd07e;margin:8px 0;word-break:break-all}
+  .copy{font-size:13px;color:#7fd1a6;cursor:pointer}
+  .count{font-size:12px;color:#8ac3ad;text-align:center;margin-top:14px}
+  details{margin-top:18px;font-size:12px;color:#7cae9b}
+  details summary{cursor:pointer;color:#9fd9c2}
+  details p{line-height:1.6}
+  code{background:#0a2a20;padding:2px 5px;border-radius:4px;color:#2bd07e}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>土方子小百科 · 激活码</h1>
+    <div class="sub">永久买断版解锁码</div>
+    <div class="price">¥6.66 <small>一次付费 · 永久使用</small></div>
+    <button class="btn" id="claim">我已付款，领取激活码</button>
+    <div class="hint">付款后点上方按钮，系统自动发放，无需人工</div>
+    <div class="result" id="result">
+      <div class="lab">您的激活码（长按复制 / 在 App「激活」弹层里输入）</div>
+      <div class="code" id="code"></div>
+      <span class="copy" id="copy">点击复制</span>
+    </div>
+    <div class="count" id="count"></div>
+    <details>
+      <summary>侯哥管理说明（客户请忽略）</summary>
+      <p>本页码池已内置 <b>100</b> 个有效激活码，客户点击即随机分配一个并写入本机缓存防重复领取。<br>
+      码池用尽后：运行 <code>土方子部署包\售卖\激活码批量生成.py</code> 重新生成一批，把下方 <code>POOL</code> 数组替换为新码即可（需重新部署到 GitHub）。<br>
+      ⚠️ 码池写在页面 JS 中属公开可见，请勿把整批码发到公开群；发现被刷可更换码段。</p>
+    </details>
+  </div>
+<script>
+  const POOL=[
+  "TFZ-UHUX-9ZJG-AT94",
+  "TFZ-B2BG-Q9MC-BMYU",
+  "TFZ-SKSZ-YHQ8-KFPT",
+  "TFZ-949J-FJTV-LGEK",
+  "TFZ-QMQ3-PS5R-MA5B",
+  "TFZ-767L-628M-V4MA",
+  "TFZ-NPN5-EABH-WWC2",
+  "TFZ-585N-VJMD-6X3S",
+  "TFZ-LRL7-5SQ9-7RSR",
+  "TFZ-58WF-HTNZ-CMDK",
+  "TFZ-LRDY-R3RV-DF4B",
+  "TFZ-3AUH-8BUR-M9T3",
+  "TFZ-JTB2-GK6M-N3B2",
+  "TFZ-ZCSK-XT9H-WV2S",
+  "TFZ-GV94-73CD-XWRJ",
+  "TFZ-XEQM-NBF9-YQGH",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-LRDY-R3RV-DF4B",
+  "TFZ-3AUH-8BUR-M9T3",
+  "TFZ-JTB2-GK6M-N3B2",
+  "TFZ-ZCSK-XT9H-WV2S",
+  "TFZ-GV94-73CD-XWRJ",
+  "TFZ-XEQM-NBF9-YQGH",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-3AUH-8BUR-M9T3",
+  "TFZ-JTB2-GK6M-N3B2",
+  "TFZ-ZCSK-XT9H-WV2S",
+  "TFZ-GV94-73CD-XWRJ",
+  "TFZ-XEQM-NBF9-YQGH",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-A33A-CCCE-SZUG",
+  "TFZ-JTB2-GK6M-N3B2",
+  "TFZ-ZCSK-XT9H-WV2S",
+  "TFZ-GV94-73CD-XWRJ",
+  "TFZ-XEQM-NBF9-YQGH",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-A33A-CCCE-SZUG",
+  "TFZ-RLJT-TLFA-TTKF",
+  "TFZ-ZCSK-XT9H-WV2S",
+  "TFZ-GV94-73CD-XWRJ",
+  "TFZ-XEQM-NBF9-YQGH",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-A33A-CCCE-SZUG",
+  "TFZ-RLJT-TLFA-TTKF",
+  "TFZ-85ZC-3UJ6-UM37",
+  "TFZ-GV94-73CD-XWRJ",
+  "TFZ-XEQM-NBF9-YQGH",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-A33A-CCCE-SZUG",
+  "TFZ-RLJT-TLFA-TTKF",
+  "TFZ-85ZC-3UJ6-UM37",
+  "TFZ-PNGV-J4UT-4NSX",
+  "TFZ-XEQM-NBF9-YQGH",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-A33A-CCCE-SZUG",
+  "TFZ-RLJT-TLFA-TTKF",
+  "TFZ-85ZC-3UJ6-UM37",
+  "TFZ-PNGV-J4UT-4NSX",
+  "TFZ-67XE-SCXP-5GHW",
+  "TFZ-EX76-WKRW-8J79",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-A33A-CCCE-SZUG",
+  "TFZ-RLJT-TLFA-TTKF",
+  "TFZ-85ZC-3UJ6-UM37",
+  "TFZ-PNGV-J4UT-4NSX",
+  "TFZ-67XE-SCXP-5GHW",
+  "TFZ-MQEX-9L2K-DA8N",
+  "TFZ-VGNP-DTUS-9CPZ",
+  "TFZ-CZ58-M3XN-HDEY",
+  "TFZ-TJLR-449J-J75Q",
+  "TFZ-A33A-CCCE-SZUG",
+  "TFZ-RLJT-TLFA-TTKF",
+  "TFZ-85ZC-3UJ6-UM37",
+  "TFZ-PNGV-J4UT-4NSX",
+  "TFZ-67XE-SCXP-5GHW",
+  "TFZ-MQEX-9L2K-DA8N",
+  "TFZ-49VG-HUCF-E4QE",
+  "TFZ-EX7X-JUSR-E8HT"
+  ];
+  const KEY="tfz_claimed_codes";
+  function claimed(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}}
+  function showCount(){
+    const n=claimed().length;
+    document.getElementById("count").textContent="本设备已领取："+n+" 个";
+  }
+  function claim(){
+    const used=claimed();
+    const avail=POOL.filter(c=>!used.includes(c));
+    if(avail.length===0){alert("激活码已发放完毕，请联系「侯哥」补发");return;}
+    const code=avail[Math.floor(Math.random()*avail.length)];
+    used.push(code);
+    localStorage.setItem(KEY,JSON.stringify(used));
+    const r=document.getElementById("result");
+    r.style.display="block";
+    document.getElementById("code").textContent=code;
+    showCount();
+    document.getElementById("claim").textContent="再领一个（如多设备）";
+  }
+  document.getElementById("claim").addEventListener("click",claim);
+  document.getElementById("copy").addEventListener("click",()=>{
+    const t=document.getElementById("code").textContent;
+    navigator.clipboard&&navigator.clipboard.writeText(t);
+    document.getElementById("copy").textContent="已复制 ✓";
+    setTimeout(()=>document.getElementById("copy").textContent="点击复制",1500);
+  });
+  showCount();
+</script>
+</body>
+</html>
