@@ -6,55 +6,60 @@
 <title>土方子小百科 · 民间实用生活方 · 购买</title>
 <style>
   :root{
-    --green:#0f3d2e; --green-d:#0a2a20; --orange:#2bd07e; --orange-l:#3ee08f;
-    --bg:#f4f6f9; --card:#fff; --ink:#222b36; --muted:#7a8696; --line:#e7ecf2;
-    --shadow:0 8px 24px rgba(15,61,46,.10);
+    --bg1:#0f3d2e; --bg2:#0a2a20; --accent:#2bd07e; --accent-l:#3ee08f;
+    --page:#f4f6f9; --card:#fff; --ink:#222b36; --muted:#7a8696; --line:#e7ecf2;
+    --shadow:0 8px 24px rgba(0,0,0,.10);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
-    background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:480px;margin:0 auto;background:var(--bg);min-height:100vh;padding-bottom:34px}
-  .top{background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;padding:22px 20px 26px;text-align:center}
-  .top .logo{width:62px;height:62px;border-radius:16px;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:30px;box-shadow:var(--shadow);margin-bottom:10px}
-  .top h1{margin:0;font-size:21px;font-weight:800;letter-spacing:1px}
-  .top p{margin:6px 0 0;font-size:13px;color:#bfe9d6}
-  .top .hook{font-size:16px;font-weight:800;color:var(--orange-l);margin:10px 0 8px;line-height:1.45;padding:0 6px;text-shadow:0 1px 2px rgba(0,0,0,.2)}
-  .badge{display:inline-block;margin-top:12px;background:rgba(43,208,126,.18);color:var(--orange-l);
-    border:1px solid rgba(43,208,126,.5);font-size:12px;padding:4px 12px;border-radius:20px}
+    background:var(--page);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:480px;margin:0 auto;background:var(--page);min-height:100vh;padding-bottom:34px}
+  .top{background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;padding:26px 20px 30px;text-align:center}
+  .top .logo{width:66px;height:66px;border-radius:18px;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:32px;box-shadow:var(--shadow);margin-bottom:12px}
+  .top .hook{font-size:17px;font-weight:800;color:var(--accent-l);margin:10px 0 8px;line-height:1.5;padding:0 8px;text-shadow:0 1px 2px rgba(0,0,0,.2)}
+  .top h1{margin:0;font-size:22px;font-weight:800;letter-spacing:1px}
+  .top p{margin:7px 0 0;font-size:13px;color:rgba(255,255,255,.75)}
+  .badge{display:inline-block;margin-top:14px;background:rgba(255,255,255,.12);color:var(--accent-l);
+    border:1px solid rgba(255,255,255,.3);font-size:12px;padding:5px 14px;border-radius:20px}
   .sec{padding:18px 16px 0}
-  .sec h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:7px;color:var(--green)}
-  .sec h2 .bar{width:4px;height:16px;background:var(--orange);border-radius:3px}
+  .sec h2{font-size:15px;margin:0 0 12px;display:flex;align-items:center;gap:7px;color:var(--bg1)}
+  .sec h2 .bar{width:4px;height:16px;background:var(--accent);border-radius:3px}
   .feat{background:var(--card);border-radius:16px;padding:6px 14px;box-shadow:var(--shadow)}
-  .feat li{list-style:none;display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .feat li{list-style:none;display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
   .feat li:last-child{border-bottom:0}
   .feat .ic{font-size:20px;flex:0 0 auto;margin-top:1px}
-  .feat b{color:var(--green)}
-  .price{background:linear-gradient(135deg,var(--green),var(--green-d));color:#fff;border-radius:18px;
-    padding:20px;text-align:center;box-shadow:var(--shadow);margin:18px 16px 0}
-  .price .num{font-size:34px;font-weight:800;color:var(--orange-l)}
+  .feat b{color:var(--bg1)}
+  .price{background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;border-radius:18px;
+    padding:22px 20px;text-align:center;box-shadow:var(--shadow);margin:18px 16px 0}
+  .price .num{font-size:38px;font-weight:800;color:var(--accent-l)}
   .price .num small{font-size:16px;font-weight:600}
-  .price .t{font-size:13px;color:#bfe9d6;margin-top:2px}
-  .price .rights{margin-top:12px;font-size:12.5px;color:#e9eef5;text-align:left;display:inline-block}
-  .price .rights div{margin:3px 0}
+  .price .t{font-size:13px;color:rgba(255,255,255,.75);margin-top:4px}
+  .price .rights{margin-top:14px;font-size:12.5px;color:#e9eef5;text-align:left;display:inline-block}
+  .price .rights div{margin:4px 0}
   .steps{background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow);counter-reset:s}
-  .steps .st{display:flex;gap:11px;align-items:flex-start;padding:9px 0;font-size:13.5px}
-  .steps .st .n{counter-increment:s;flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:var(--orange);color:#0a2a20;
+  .steps .st{display:flex;gap:11px;align-items:flex-start;padding:10px 0;font-size:13.5px}
+  .steps .st .n{counter-increment:s;flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;
     display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:1px}
   .steps .st .n::before{content:counter(s)}
-  .steps .st b{color:var(--green)}
+  .steps .st b{color:var(--bg1)}
   .pay{display:flex;gap:12px;margin-top:14px}
   .pay .pc{flex:1;background:var(--card);border-radius:16px;padding:14px 10px;box-shadow:var(--shadow);text-align:center}
   .pay .pc img{width:140px;height:140px;border-radius:12px;border:1px solid var(--line)}
-  .pay .pc .nm{margin-top:9px;font-size:13px;font-weight:700;color:var(--green)}
+  .pay .pc .nm{margin-top:9px;font-size:13px;font-weight:700;color:var(--bg1)}
   .pay .pc .tip{font-size:11px;color:var(--muted);margin-top:2px}
-  .inst{background:var(--card);border-radius:16px;padding:16px;text-align:center;box-shadow:var(--shadow);margin-top:14px}
+  .inst{background:var(--card);border-radius:16px;padding:18px 16px;text-align:center;box-shadow:var(--shadow);margin-top:14px}
   .inst img{width:170px;height:170px;border-radius:12px}
-  .inst .cap{font-size:13px;color:var(--green);font-weight:700;margin-top:10px}
+  .inst .cap{font-size:14px;color:var(--bg1);font-weight:700;margin-top:10px}
   .inst .sub{font-size:11.5px;color:var(--muted);margin-top:2px}
-  .priv{background:#eefaf3;border:1px solid #c7ecd8;border-radius:14px;padding:13px 14px;font-size:12.5px;color:#1c6b4a;margin-top:14px}
-  .priv b{color:var(--orange-l)}
-  .foot{text-align:center;font-size:11.5px;color:var(--muted);margin-top:20px;padding:0 16px}
-  .edit{text-align:center;font-size:11px;color:#aab4c0;margin-top:8px}
+  .priv{background:rgba(245,135,42,.06);border:1px solid rgba(245,135,42,.18);border-radius:14px;padding:13px 14px;font-size:12.5px;color:#6b4a2b;margin-top:14px}
+  .priv b{color:var(--accent)}
+  .contact{display:flex;align-items:center;gap:14px;background:#fff;border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-top:14px}
+  .contact img{width:100px;height:100px;border-radius:12px;border:1.5px solid var(--line);flex-shrink:0;object-fit:cover}
+  .contact .info{flex:1;font-size:13px;line-height:1.9}
+  .contact .info b{color:var(--bg1)}
+  .foot{text-align:center;font-size:11.5px;color:var(--muted);margin-top:22px;padding:0 16px}
+  .edit{text-align:center;font-size:11px;color:#aab4c0;margin-top:8px;padding:0 20px}
+  .btn{display:inline-block;max-width:300px;padding:15px 26px;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;text-decoration:none;font-size:16px;box-shadow:var(--shadow)}
 </style>
 </head>
 <body>
@@ -91,13 +96,13 @@
   <div class="sec">
     <h2><span class="bar"></span>购买步骤</h2>
     <div class="steps">
-      <div class="st"><span class="n"></span><div>扫上方<b>安装码</b>，免费装到手机试用（可看前 12 条）</div></div>
-      <div class="st"><span class="n"></span><div>体验满意，扫下方<b>微信 / 支付宝收款码</b>付 ¥6.66</div></div>
-      <div class="st"><span class="n"></span><div>付款后点下方<b>领取激活码</b>按钮，系统自动发码，不用联系侯哥</div></div>
-      <div class="st"><span class="n"></span><div>在 App 里点「激活」输入码，<b>永久解锁全部内容</b></div></div>
+      <div class="st"><span class="n"></span><div>扫上方安装码，免费装到手机试用（可看前 12 条）</div></div>
+      <div class="st"><span class="n"></span><div>体验满意，扫下方微信 / 支付宝收款码付 ¥6.66</div></div>
+      <div class="st"><span class="n"></span><div>付款后点下方领取激活码按钮，系统自动发码</div></div>
+      <div class="st"><span class="n"></span><div>在 App 里点「激活」输入码，永久解锁全部内容</div></div>
     </div>
     <div class="priv" style="margin-top:12px">
-      <b>说明：</b>本页已公开<b>安装码</b>，可免费扫码装到手机试用（免费看前 12 条）。想解锁全部，扫下方收款码付 ¥6.66，付款后点下方按钮<b>系统自动发激活码</b>，不用联系侯哥、不用等。
+      <b>说明：</b>本页已公开<b>安装码</b>，可免费扫码装到手机试用（免费看前 12 条）。想解锁完整版，扫下方收款码付 ¥6.66，付款后点下方按钮<b>系统自动发激活码</b>，不用联系侯哥、不用等。
     </div>
   </div>
 
@@ -106,10 +111,10 @@
     <div class="inst">
       <img src="install-qr.png" alt="安装二维码">
       <div class="cap">长按 / 扫一扫，装到手机桌面</div>
-      <div class="sub">免费看前 12 条 · 想解锁全部再付款激活</div>
+      <div class="sub">免费看前 12 条 · 想解锁完整版再付款激活</div>
     </div>
-    <div class="priv" style="margin-top:12px">
-      <b>怎么用：</b>用手机扫上方二维码 → 点「添加到主屏幕」即装到桌面 → 打开就能查。免费看前 12 条，看完想解锁全部，扫下方收款码付 ¥6.66，付款后点下方按钮<b>系统自动发激活码</b>，不用联系侯哥、不用等。
+    <div class="priv" style="margin-top:12px;background:rgba(31,58,95,.05);border-color:rgba(31,58,95,.12);color:#3a4a5a">
+      <b>怎么用：</b>用手机扫上方二维码 → 点「添加到主屏幕」即装到桌面 → 打开就能用。免费看前 12 条，之后扫下方收款码付 ¥6.66，付款后点下方按钮<b>系统自动发激活码</b>，不用联系侯哥、不用等。
     </div>
   </div>
 
@@ -127,47 +132,36 @@
         <div class="tip">长按识别二维码</div>
       </div>
     </div>
-    <div class="priv" style="margin-top:14px;text-align:center">
-      <p style="margin:0 0 8px">付 ¥6.66 后，点下方按钮，<b>系统自动发放激活码</b>，不用联系侯哥、不用等。</p>
-      <a href="https://houyanliang888.github.io/tuofangzi-miniprogram/claim.html" style="display:inline-block;max-width:300px;padding:15px 24px;border-radius:10px;background:#2bd07e;color:#0a2a20;font-weight:700;text-decoration:none;font-size:16px">💡 我已付款，领取激活码</a>
-      <div style="margin-top:14px;background:#fff;border-radius:14px;padding:14px;display:inline-block;box-shadow:0 4px 14px rgba(0,0,0,.10)">
-        <img src="claim-qr.png" alt="领激活码" style="width:300px;height:300px;display:block;border-radius:0">
+    <div class="priv" style="margin-top:14px;text-align:center;border-color:rgba(0,0,0,.08);background:#fff">
+      <p style="margin:0 0 10px;color:var(--ink)">付 ¥6.66 后，点下方按钮，<b style="color:var(--bg1)">系统自动发放激活码</b>，不用联系侯哥、不用等。</p>
+      <a href="https://houyanliang888.github.io/tuofangzi-miniprogram/claim.html" class="btn">💡 我已付款，领取激活码</a>
+      <div style="margin-top:16px;background:#f8fafc;border-radius:14px;padding:14px;display:inline-block;box-shadow:0 4px 14px rgba(0,0,0,.08)">
+        <img src="claim-qr.png" alt="领激活码" style="width:280px;height:280px;display:block;border-radius:0">
       </div>
-      <p style="color:#3a6e92;font-size:13px;margin:10px 0 0">↑ 长按上图二维码识别，进入领码页</p>
-      <p style="color:#3a6e92;font-size:12px;margin:4px 0 0">若识别失败，点上方绿色按钮直接打开，或复制链接在浏览器打开：</p>
-      <p style="color:#0a4a73;font-size:11px;margin:4px 0 0;word-break:break-all">houyanliang888.github.io/tuofangzi-miniprogram/claim.html</p>
-      <p style="color:#1c6b4a;font-size:12px;margin:6px 0 0">或长按上方二维码打开领码页</p>
-    </div>
-  </div>
-
-  <div class="sec">
-    <h2><span class="bar"></span>微信内购买 · 自动发码（推荐）</h2>
-    <div class="priv" style="border-color:#9ad7ff;background:#eef7ff;color:#0a4a73;text-align:center">
-      <p style="margin:0 0 10px;font-size:13.5px;line-height:1.7"><b>付款后页面自动显示激活码，全程无需联系侯哥。</b><br>点击下方按钮，在微信里付款 ¥6.66，立刻拿到码，App 里输入即解锁。</p>
-      <a href="【在此填入平台购买链接】" style="display:inline-block;max-width:300px;padding:13px 22px;border-radius:10px;background:#2bd07e;color:#0a2a20;font-weight:700;text-decoration:none">💳 微信内付款，自动领激活码</a>
-      <div style="margin-top:9px;font-size:11.5px;color:#3a6e92">拿到码后，打开土方子 App → 点「激活」→ 输入即可永久解锁全部内容</div>
+      <p style="color:var(--muted);font-size:13px;margin:10px 0 0">↑ 长按上方二维码识别，进入领码页</p>
+      <p style="color:var(--muted);font-size:12px;margin:4px 0 0">若识别失败，点上方按钮直接打开</p>
     </div>
   </div>
 
   <div class="sec">
     <h2><span class="bar"></span>联系侯哥（咨询 / 售后）</h2>
-    <div class="priv" style="border-color:#c7ecd8;background:#eefaf3;color:#1c6b4a;display:flex;align-items:center;gap:14px">
-      <img src="wechat-contact.jpg" alt="侯哥微信" style="width:104px;height:104px;border-radius:12px;border:1.5px solid #c7ecd8;flex-shrink:0;object-fit:cover" />
-      <div style="flex:1;font-size:13px;line-height:1.9">
+    <div class="contact">
+      <img src="wechat-contact.jpg" alt="侯哥微信" />
+      <div class="info">
         <div><b>微信号：</b><span style="color:#07c160;font-weight:700">ZNGHS_HYL</span></div>
         <div><b>小红书：</b>侯哥智改</div>
-        <div style="font-size:12px;color:#5a7a68;margin-top:4px">微信扫一扫添加，使用问题、解锁疑问随时找我</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">微信扫一扫添加，使用问题、解锁疑问随时找我</div>
       </div>
     </div>
   </div>
 
   <div class="sec">
     <div class="priv">
-      <b>隐私说明：</b>土方子小百科为纯本地知识工具，所有浏览与收藏数据仅保存在你自己的手机浏览器中，开发者无法读取、也不会上传到任何服务器。付款仅用于获取使用授权，不涉及你的任何隐私数据。
+      <b>隐私说明：</b>土方子小百科中的内容仅供生活参考，不能替代专业医疗建议；身体不适请及时就医。应用为纯本地工具，浏览与收藏数据仅保存在你自己的手机浏览器中。
     </div>
   </div>
 
-  <div class="foot">土方子小百科 · 便民生活方子知识库　侯哥 出品<br>小毛病不求人，方子装进口袋</div>
+  <div class="foot">土方子小百科 · 全屋智能设计师 侯哥 出品<br>小毛病不求人，方子装进口袋</div>
   <div class="edit">※ 本页文字 / 价格 / 收款码可改；安装码已公开可免费试用，付 ¥6.66 后由客户在领码页自助领取激活码，无需侯哥手动发送</div>
 </div>
 </body>
